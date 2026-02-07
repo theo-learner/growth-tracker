@@ -4,17 +4,16 @@ import { useState } from "react";
 import { useStore } from "@/store/useStore";
 
 /**
- * Step 2: 기질 질문 3개 (전문 용어 ❌, 엄마 언어로)
+ * Step 2: 기질 질문 3개 v2
+ * 전문 용어 ❌, 엄마 언어 — 부드러운 카드 선택 UI
  */
 
-// Q1: 새로운 환경에서 우리 아이는? (단일 선택)
 const Q1_OPTIONS = [
-  { value: "bold", emoji: "🙋", label: "낯선 곳도 씩씩하게!" },
-  { value: "adaptive", emoji: "🫣", label: "처음엔 좀 살피다가..." },
-  { value: "inhibited", emoji: "🤗", label: "엄마 뒤에 숨어요" },
+  { value: "bold", emoji: "🙋", label: "낯선 곳도 씩씩하게!", desc: "새로운 친구도 먼저 다가가요" },
+  { value: "adaptive", emoji: "🫣", label: "처음엔 좀 살피다가...", desc: "적응하면 잘 놀아요" },
+  { value: "inhibited", emoji: "🤗", label: "엄마 뒤에 숨어요", desc: "익숙해지면 괜찮아요" },
 ] as const;
 
-// Q2: 또래보다 빠르다고 느끼는 건? (다중 선택)
 const Q2_OPTIONS = [
   { value: "verbal", emoji: "🗣️", label: "말 표현력" },
   { value: "hands", emoji: "✋", label: "손 조작" },
@@ -24,7 +23,6 @@ const Q2_OPTIONS = [
   { value: "numbers", emoji: "📐", label: "숫자·계산" },
 ] as const;
 
-// Q3: 요즘 빠져있는 건? (다중 선택)
 const Q3_OPTIONS = [
   { value: "puzzle", emoji: "🧩", label: "퍼즐" },
   { value: "books", emoji: "📚", label: "책" },
@@ -60,55 +58,80 @@ export default function Step2Temperament() {
 
   return (
     <div className="animate-fadeIn">
-      <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold">
-          {childName}는 어떤 아이인가요? 😊
+      <div className="text-center mb-8">
+        <div className="w-16 h-16 mx-auto rounded-full flex items-center justify-center
+                        bg-gradient-to-br from-sunny-yellow-light to-sunny-yellow/30 mb-4">
+          <span className="text-3xl">😊</span>
+        </div>
+        <h1 className="text-2xl font-bold text-dark-gray">
+          {childName}는 어떤 아이인가요?
         </h1>
-        <p className="text-sm text-mid-gray mt-2">편하게 골라주세요</p>
+        <p className="text-sm text-mid-gray mt-2">편하게 골라주세요, 정답은 없어요</p>
       </div>
 
-      {/* Q1: 단일 선택 */}
+      {/* Q1: 단일 선택 — 카드형 */}
       <div className="mb-8">
-        <h2 className="text-base font-semibold mb-3">
-          새로운 환경에서 우리 아이는?
+        <h2 className="section-title">
+          🌍 새로운 환경에서 우리 아이는?
         </h2>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2.5">
           {Q1_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => setQ1(opt.value)}
-              className={`w-full py-3 px-4 rounded-card text-left font-medium transition-all
+              className={`
+                w-full py-4 px-4 rounded-card text-left
+                transition-all duration-200
                 ${q1 === opt.value
-                  ? "bg-soft-green/10 border-2 border-soft-green text-dark-gray"
-                  : "bg-white border border-light-gray text-dark-gray hover:border-soft-green/50"
-                }`}
+                  ? "bg-gradient-green-soft border-2 border-soft-green shadow-btn-green/20 scale-[1.01]"
+                  : "bg-white border border-light-gray hover:border-soft-green/40 hover:shadow-card"
+                }
+              `}
             >
-              <span className="mr-2">{opt.emoji}</span>
-              {opt.label}
+              <div className="flex items-center gap-3">
+                <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
+                <div>
+                  <span className={`font-semibold text-sm ${q1 === opt.value ? "text-soft-green-700" : "text-dark-gray"}`}>
+                    {opt.label}
+                  </span>
+                  <p className="text-xs text-mid-gray mt-0.5">{opt.desc}</p>
+                </div>
+                {/* 선택 체크 */}
+                {q1 === opt.value && (
+                  <div className="ml-auto w-6 h-6 rounded-full bg-soft-green flex items-center justify-center flex-shrink-0 animate-scale-in">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                      <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                )}
+              </div>
             </button>
           ))}
         </div>
       </div>
 
-      {/* Q2: 다중 선택 */}
+      {/* Q2: 다중 선택 — 칩 그리드 */}
       <div className="mb-8">
-        <h2 className="text-base font-semibold mb-1">
-          또래보다 빠르다고 느끼는 건?
+        <h2 className="section-title">
+          ⚡ 또래보다 빠르다고 느끼는 건?
         </h2>
-        <p className="text-xs text-mid-gray mb-3">여러 개 선택 가능 · 없으면 건너뛰어도 돼요</p>
-        <div className="grid grid-cols-3 gap-2">
+        <p className="text-xs text-mid-gray mb-3 -mt-2">여러 개 선택 가능 · 없으면 건너뛰어도 돼요</p>
+        <div className="grid grid-cols-3 gap-2.5">
           {Q2_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => toggleMulti(q2, opt.value, setQ2)}
-              className={`py-3 px-2 rounded-card text-center font-medium transition-all text-sm
+              className={`
+                py-3.5 px-2 rounded-card text-center
+                transition-all duration-200
                 ${q2.includes(opt.value)
-                  ? "bg-soft-green text-white shadow-md"
-                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green"
-                }`}
+                  ? "bg-gradient-green text-white shadow-btn-green scale-[1.03]"
+                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green/40 hover:shadow-card"
+                }
+              `}
             >
               <div className="text-xl mb-1">{opt.emoji}</div>
-              {opt.label}
+              <div className="text-xs font-medium">{opt.label}</div>
             </button>
           ))}
         </div>
@@ -116,23 +139,26 @@ export default function Step2Temperament() {
 
       {/* Q3: 다중 선택 */}
       <div className="mb-8">
-        <h2 className="text-base font-semibold mb-1">
-          요즘 빠져있는 건?
+        <h2 className="section-title">
+          🎯 요즘 빠져있는 건?
         </h2>
-        <p className="text-xs text-mid-gray mb-3">여러 개 선택 가능</p>
-        <div className="grid grid-cols-3 gap-2">
+        <p className="text-xs text-mid-gray mb-3 -mt-2">여러 개 선택 가능</p>
+        <div className="grid grid-cols-3 gap-2.5">
           {Q3_OPTIONS.map((opt) => (
             <button
               key={opt.value}
               onClick={() => toggleMulti(q3, opt.value, setQ3)}
-              className={`py-3 px-2 rounded-card text-center font-medium transition-all text-sm
+              className={`
+                py-3.5 px-2 rounded-card text-center
+                transition-all duration-200
                 ${q3.includes(opt.value)
-                  ? "bg-soft-green text-white shadow-md"
-                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green"
-                }`}
+                  ? "bg-gradient-green text-white shadow-btn-green scale-[1.03]"
+                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green/40 hover:shadow-card"
+                }
+              `}
             >
               <div className="text-xl mb-1">{opt.emoji}</div>
-              {opt.label}
+              <div className="text-xs font-medium">{opt.label}</div>
             </button>
           ))}
         </div>
@@ -142,20 +168,14 @@ export default function Step2Temperament() {
       <div className="flex gap-3">
         <button
           onClick={() => setOnboardingStep(1)}
-          className="flex-1 h-12 rounded-button font-semibold text-base
-                     bg-white text-mid-gray border border-light-gray
-                     hover:border-soft-green transition-all"
+          className="btn-secondary flex-1"
         >
           ← 이전
         </button>
         <button
           onClick={handleNext}
           disabled={!canProceed}
-          className={`flex-[2] h-12 rounded-button font-semibold text-base transition-all
-            ${canProceed
-              ? "bg-soft-green text-white shadow-md hover:bg-soft-green/90 active:scale-[0.98]"
-              : "bg-light-gray text-mid-gray cursor-not-allowed"
-            }`}
+          className="btn-primary flex-[2]"
         >
           다음으로 →
         </button>

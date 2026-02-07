@@ -38,16 +38,27 @@ export default function HomeTab() {
 
   return (
     <div className="px-5">
-      {/* 아이 프로필 영역 */}
-      <div className="text-center py-4">
-        <div className="w-16 h-16 mx-auto rounded-full bg-soft-green/20 flex items-center justify-center text-3xl mb-2">
-          {child?.gender === "female" ? "👧" : child?.gender === "male" ? "👦" : "🧒"}
+      {/* 아이 프로필 영역 — 따뜻한 아바타 + 카운터 */}
+      <div className="text-center py-5">
+        <div className="relative inline-block mb-3">
+          <div className="w-[72px] h-[72px] mx-auto rounded-full
+                          bg-gradient-to-br from-soft-green-50 to-soft-green-100
+                          border-2 border-soft-green-200/40
+                          shadow-card-green
+                          flex items-center justify-center text-3xl">
+            {child?.gender === "female" ? "👧" : child?.gender === "male" ? "👦" : "🧒"}
+          </div>
+          {/* 성장 잎사귀 장식 */}
+          <span className="absolute -top-0.5 -right-0.5 text-base animate-float">🌱</span>
         </div>
-        <h2 className="text-xl font-bold">{child?.nickname}</h2>
-        <p className="text-sm text-mid-gray">만 {child?.age}세</p>
-        <p className="text-sm text-soft-green font-semibold mt-1">
-          🌱 D+{daysCount} 함께 성장한 날
-        </p>
+        <h2 className="text-xl font-bold text-dark-gray">{child?.nickname}</h2>
+        <p className="text-sm text-mid-gray mt-0.5">만 {child?.age}세</p>
+        <div className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-badge
+                        bg-soft-green-50 border border-soft-green-100/50">
+          <span className="text-xs">🌱</span>
+          <span className="text-xs font-bold text-soft-green-600">D+{daysCount}</span>
+          <span className="text-xs text-soft-green-500">함께 성장한 날</span>
+        </div>
       </div>
 
       {/* 일간 인사이트 카드 */}

@@ -21,11 +21,10 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/30 z-40" onClick={onClose} />
-      <div className="fixed inset-x-0 bottom-0 top-20 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[20px] z-50 animate-slideUp">
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 bg-light-gray rounded-full" />
-        </div>
+      <div className="bottom-sheet-backdrop" onClick={onClose} />
+      <div className="fixed inset-x-0 bottom-0 top-20 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[24px] z-50 animate-slideUp"
+           style={{ boxShadow: "0 -8px 40px rgba(0,0,0,0.08), 0 -2px 12px rgba(0,0,0,0.04)" }}>
+        <div className="bottom-sheet-handle" />
 
         <div className="px-5 pb-8">
           <div className="flex items-center justify-between mb-6">

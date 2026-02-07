@@ -5,7 +5,8 @@ import { useStore } from "@/store/useStore";
 import { ChildProfile } from "@/types";
 
 /**
- * Step 1: 아이 기본 정보 입력
+ * Step 1: 아이 기본 정보 입력 v2
+ * 따뜻한 일러스트 + 부드러운 인터랙션
  */
 export default function Step1ChildInfo() {
   const { setChild, setOnboardingStep } = useStore();
@@ -30,13 +31,25 @@ export default function Step1ChildInfo() {
 
   return (
     <div className="animate-fadeIn">
-      {/* 아이 아바타 일러스트 */}
-      <div className="text-center mb-6">
-        <div className="text-6xl mb-4">🧒</div>
-        <h1 className="text-2xl font-bold text-dark-gray">
-          우리 아이를 알려주세요 🌱
+      {/* 아이 아바타 일러스트 — 따뜻한 원형 배경 */}
+      <div className="text-center mb-8">
+        <div className="relative inline-block">
+          {/* 배경 원 — 소프트 그린 그라데이션 */}
+          <div className="w-24 h-24 mx-auto rounded-full flex items-center justify-center
+                          bg-gradient-to-br from-soft-green-50 to-soft-green-100
+                          border-2 border-soft-green-200/50 shadow-btn-green/20">
+            <span className="text-5xl">🧒</span>
+          </div>
+          {/* 장식 잎사귀 */}
+          <span className="absolute -top-1 -right-1 text-lg animate-bounce-gentle">🌱</span>
+        </div>
+        <h1 className="text-2xl font-bold text-dark-gray mt-5">
+          우리 아이를 알려주세요
         </h1>
-        <p className="text-sm text-mid-gray mt-2">간단한 정보만 입력하면 돼요</p>
+        <p className="text-sm text-mid-gray mt-2 leading-relaxed">
+          간단한 정보만 입력하면 돼요.<br/>
+          모든 정보는 안전하게 보관됩니다 🔒
+        </p>
       </div>
 
       {/* 아이 이름/닉네임 */}
@@ -49,15 +62,17 @@ export default function Step1ChildInfo() {
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
           placeholder="예: 유나"
-          className="w-full h-12 px-4 rounded-button border border-light-gray bg-white
-                     text-base text-dark-gray placeholder:text-mid-gray/50
-                     focus:outline-none focus:border-soft-green focus:ring-2 focus:ring-soft-green/20
-                     transition-all"
+          className="input-field"
           maxLength={10}
         />
+        {nickname.trim() && (
+          <p className="text-xs text-soft-green mt-1.5 animate-fade-in">
+            ✓ {nickname.trim()}(이)의 성장 이야기가 시작돼요!
+          </p>
+        )}
       </div>
 
-      {/* 나이 선택 */}
+      {/* 나이 선택 — 카드형 */}
       <div className="mb-6">
         <label className="block text-sm font-semibold text-dark-gray mb-2">
           만 나이
@@ -67,11 +82,14 @@ export default function Step1ChildInfo() {
             <button
               key={a}
               onClick={() => setAge(a)}
-              className={`flex-1 h-12 rounded-button font-semibold text-base transition-all
+              className={`
+                flex-1 py-3 rounded-card font-semibold text-base
+                transition-all duration-200
                 ${age === a
-                  ? "bg-soft-green text-white shadow-md"
-                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green"
-                }`}
+                  ? "bg-gradient-green text-white shadow-btn-green scale-[1.02]"
+                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green/50 hover:shadow-card"
+                }
+              `}
             >
               만 {a}세
             </button>
@@ -79,7 +97,7 @@ export default function Step1ChildInfo() {
         </div>
       </div>
 
-      {/* 성별 선택 */}
+      {/* 성별 선택 — 아이콘 카드 */}
       <div className="mb-8">
         <label className="block text-sm font-semibold text-dark-gray mb-2">
           성별
@@ -93,11 +111,15 @@ export default function Step1ChildInfo() {
             <button
               key={g.value}
               onClick={() => setGender(g.value)}
-              className={`flex-1 py-3 rounded-button font-medium transition-all flex flex-col items-center gap-1
+              className={`
+                flex-1 py-3.5 rounded-card font-medium
+                transition-all duration-200
+                flex flex-col items-center gap-1.5
                 ${gender === g.value
-                  ? "bg-soft-green text-white shadow-md"
-                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green"
-                }`}
+                  ? "bg-gradient-green text-white shadow-btn-green scale-[1.02]"
+                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green/50 hover:shadow-card"
+                }
+              `}
             >
               <span className="text-2xl">{g.emoji}</span>
               <span className="text-sm">{g.label}</span>
@@ -110,11 +132,7 @@ export default function Step1ChildInfo() {
       <button
         onClick={handleNext}
         disabled={!canProceed}
-        className={`w-full h-12 rounded-button font-semibold text-base transition-all
-          ${canProceed
-            ? "bg-soft-green text-white shadow-md hover:bg-soft-green/90 active:scale-[0.98]"
-            : "bg-light-gray text-mid-gray cursor-not-allowed"
-          }`}
+        className="btn-primary"
       >
         다음으로 →
       </button>

@@ -102,15 +102,13 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
 
   return (
     <>
-      {/* 백드롭 */}
-      <div className="fixed inset-0 bg-black/30 z-40" onClick={onClose} />
+      {/* 백드롭 — 블러 효과 */}
+      <div className="bottom-sheet-backdrop" onClick={onClose} />
 
-      {/* 바텀시트 */}
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[20px] z-50 animate-slideUp">
+      {/* 바텀시트 — 프리미엄 라운드 */}
+      <div className="bottom-sheet">
         {/* 핸들 */}
-        <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 bg-light-gray rounded-full" />
-        </div>
+        <div className="bottom-sheet-handle" />
 
         <div className="px-5 pb-8 max-h-[70vh] overflow-y-auto">
           {/* 헤더 */}
