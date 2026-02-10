@@ -2,7 +2,8 @@
 export interface ChildProfile {
   id: string;
   nickname: string;
-  age: 4 | 5 | 6; // 만 나이
+  age: 4 | 5 | 6; // 레거시 필드 (만 나이)
+  birthDate?: string; // YYYY-MM-DD (새로운 기준)
   gender: "male" | "female" | "unknown";
   createdAt: string; // ISO date
 }

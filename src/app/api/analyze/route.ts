@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { KDST_DATA, calculateMonths, getKDSTChecklist } from "@/data/k-dst";
 
 /**
- * POST /api/analyze — 기록 기반 발달 분석
- * Claude API 사용 가능 시 AI 분석, 불가 시 프리셋 응답
+ * POST /api/analyze — 기록 기반 발달 분석 (K-DST 기준 적용)
  */
 
 // 프리셋 분석 결과 (데모 모드 fallback)
@@ -43,6 +43,22 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { activities, childProfile } = body;
 
+    // 월령 계산 및 K-DST 기준 가져오기
+    let kdstContext = "";
+    if (childProfile.birthDate) {
+      const months = calculateMonths(childProfile.birthDate);
+      const checklist = getKDSTChecklist(months);
+      if (checklist) {
+        kdstContext = `
+[발달 기준: K-DST ${checklist.range} (${months}개월)]
+주요 과업:
+${checklist.tasks.map((t) => `- ${t.domain}: ${t.question}`).join("\n")}
+
+분석 시 위 과업들의 달성 여부를 추정해보세요.
+`;
+      }
+    }
+
     // Claude API 키가 환경변수에 있으면 AI 분석 시도
     const apiKey = process.env.ANTHROPIC_API_KEY;
 
@@ -65,11 +81,13 @@ export async function POST(request: NextRequest) {
 
 아이 정보: ${JSON.stringify(childProfile)}
 오늘 기록: ${JSON.stringify(activities)}
+${kdstContext}
 
 규칙:
 1. 전문 용어 사용 ❌ → 엄마가 이해하는 쉬운 말로
 2. 긍정적 톤 우선
-3. IQ 점수/수치 절대 언급 ❌
+3. K-DST 기준에 비추어 잘 성장하고 있는지 언급 (가능한 경우)
+4. 점수는 상대적 추정치로 제공
 
 JSON 형식으로 응답:
 {
