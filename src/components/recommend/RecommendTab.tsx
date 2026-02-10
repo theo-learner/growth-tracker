@@ -163,12 +163,12 @@ export default function RecommendTab() {
         )}
       </div>
 
-      {/* 안내 배너 */}
-      <div className="info-banner mb-4">
+      {/* 안내 배너 (공정위 문구 준수) */}
+      <div className="info-banner mb-4 bg-gray-50 border border-gray-200">
         <div className="flex items-start gap-2">
-          <span className="text-sm shrink-0">ℹ️</span>
-          <p className="text-xs text-calm-blue-dark leading-relaxed">
-            추천은 AI 분석 기반이며, 구매 시 수수료를 받을 수 있어요.
+          <span className="text-xs shrink-0 mt-0.5">📢</span>
+          <p className="text-[11px] text-mid-gray leading-relaxed">
+            추천 상품은 AI 분석 기반이며, 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
           </p>
         </div>
       </div>

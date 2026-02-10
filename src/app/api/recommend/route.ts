@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { generateCoupangLink } from "@/lib/affiliate";
 
 /**
  * POST /api/recommend — 맞춤 추천 (Claude API, fallback: 프리셋)
@@ -35,23 +36,23 @@ const PRESET_RECOMMENDATIONS = {
   products: [
     {
       name: "라벤스부르거 100P 동물 퍼즐",
-      price: "₩18,900",
+      price: "1만원대",
       reason: "시공간 능력 강화에 도움돼요",
-      link: "https://www.coupang.com",
+      link: generateCoupangLink("라벤스부르거 100P 동물 퍼즐"),
       icon: "🧩",
     },
     {
-      name: "《달에 대해 알려줘》 과학 그림책",
-      price: "₩12,600",
+      name: "달에 대해 알려줘 그림책",
+      price: "1만원대",
       reason: "호기심을 탐구로 연결시켜줘요",
-      link: "https://www.coupang.com",
+      link: generateCoupangLink("달에 대해 알려줘 그림책"),
       icon: "📚",
     },
     {
-      name: "쿠몬 가위 연습 세트 (곡선 단계)",
-      price: "₩9,800",
+      name: "유아 안전가위 오리기 세트",
+      price: "9천원대",
       reason: "소근육 발달 단계에 딱 맞는 난이도예요",
-      link: "https://www.coupang.com",
+      link: generateCoupangLink("유아 안전가위 오리기 세트"),
       icon: "✂️",
     },
   ],
@@ -87,8 +88,9 @@ export async function POST(request: NextRequest) {
 추천 활동 3개와 추천 교구 3개를 JSON으로 응답:
 {
   "activities": [{"title": "...", "description": "...", "reason": "...", "domains": [...], "duration": "...", "icon": "emoji"}],
-  "products": [{"name": "...", "price": "₩N", "reason": "...", "link": "https://www.coupang.com", "icon": "emoji"}]
-}`,
+  "products": [{"name": "...", "price": "1만원대", "reason": "...", "icon": "emoji"}]
+}
+*주의*: products의 link 필드는 생성하지 마세요. (서버에서 생성함)`,
               },
             ],
           }),
@@ -99,6 +101,15 @@ export async function POST(request: NextRequest) {
           const text = data.content?.[0]?.text;
           if (text) {
             const parsed = JSON.parse(text);
+            
+            // 링크 동적 생성 주입
+            if (parsed.products && Array.isArray(parsed.products)) {
+              parsed.products = parsed.products.map((p: any) => ({
+                ...p,
+                link: generateCoupangLink(p.name),
+              }));
+            }
+            
             return NextResponse.json(parsed);
           }
         }
