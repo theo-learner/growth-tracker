@@ -33,24 +33,28 @@ export function generateSampleActivities(childName: string): ActivityRecord[] {
       type: "activity",
       timestamp: todayAt(14, 30),
       data: { category: "퍼즐", durationMin: 48, detail: `72조각 공룡 퍼즐 — ${childName}가 처음 혼자 완성!` },
+      isSample: true,
     },
     {
       id: "act-002",
       type: "question",
       timestamp: todayAt(11, 20),
       data: { quote: "엄마 왜 달은 낮에도 있어?", context: "산책 중에 갑자기" },
+      isSample: true,
     },
     {
       id: "act-003",
       type: "reading",
       timestamp: todayAt(9, 0),
       data: { bookTitle: "이상한 나라의 앨리스", readAlone: false, durationMin: 30 },
+      isSample: true,
     },
     {
       id: "act-004",
       type: "emotion",
       timestamp: todayAt(19, 0),
       data: { emoji: "😊", label: "행복", note: "퍼즐 완성하고 아주 뿌듯해했어요" },
+      isSample: true,
     },
     // 어제
     {
@@ -58,18 +62,21 @@ export function generateSampleActivities(childName: string): ActivityRecord[] {
       type: "activity",
       timestamp: daysAgo(1),
       data: { category: "블록", durationMin: 35, detail: "레고로 우주선 만들기" },
+      isSample: true,
     },
     {
       id: "act-006",
       type: "reading",
       timestamp: daysAgo(1),
       data: { bookTitle: "구름빵", readAlone: true, durationMin: 15 },
+      isSample: true,
     },
     {
       id: "act-007",
       type: "question",
       timestamp: daysAgo(1),
       data: { quote: "왜 비행기는 안 떨어져?", context: "레고 놀이 중" },
+      isSample: true,
     },
     // 2일 전
     {
@@ -77,12 +84,14 @@ export function generateSampleActivities(childName: string): ActivityRecord[] {
       type: "activity",
       timestamp: daysAgo(2),
       data: { category: "미술", durationMin: 40, detail: "색연필로 가족 그림 그림" },
+      isSample: true,
     },
     {
       id: "act-009",
       type: "photo",
       timestamp: daysAgo(2),
       data: { fileName: "family_drawing.jpg", note: "가족 그림 완성!" },
+      isSample: true,
     },
     // 3일 전
     {
@@ -90,12 +99,14 @@ export function generateSampleActivities(childName: string): ActivityRecord[] {
       type: "activity",
       timestamp: daysAgo(3),
       data: { category: "퍼즐", durationMin: 52, detail: "72조각 동물 퍼즐" },
+      isSample: true,
     },
     {
       id: "act-011",
       type: "reading",
       timestamp: daysAgo(3),
       data: { bookTitle: "수학도둑", readAlone: false, durationMin: 25 },
+      isSample: true,
     },
     // 4일 전
     {
@@ -103,12 +114,14 @@ export function generateSampleActivities(childName: string): ActivityRecord[] {
       type: "activity",
       timestamp: daysAgo(4),
       data: { category: "체육", durationMin: 60, detail: "공원에서 자전거 타기" },
+      isSample: true,
     },
     {
       id: "act-013",
       type: "emotion",
       timestamp: daysAgo(4),
       data: { emoji: "😤", label: "짜증", note: "숙제 하기 싫다고 울었어요" },
+      isSample: true,
     },
     // 5일 전
     {
@@ -116,12 +129,14 @@ export function generateSampleActivities(childName: string): ActivityRecord[] {
       type: "question",
       timestamp: daysAgo(5),
       data: { quote: "공룡은 왜 없어졌어?", context: "공룡 도감 보면서" },
+      isSample: true,
     },
     {
       id: "act-015",
       type: "activity",
       timestamp: daysAgo(5),
       data: { category: "코딩", durationMin: 30, detail: "스크래치 주니어로 고양이 움직이기" },
+      isSample: true,
     },
     // 6일 전
     {
@@ -129,12 +144,14 @@ export function generateSampleActivities(childName: string): ActivityRecord[] {
       type: "reading",
       timestamp: daysAgo(6),
       data: { bookTitle: "어린왕자", readAlone: false, durationMin: 20 },
+      isSample: true,
     },
     {
       id: "act-017",
       type: "activity",
       timestamp: daysAgo(6),
       data: { category: "음악", durationMin: 25, detail: "피아노 연습 — 나비야 완주" },
+      isSample: true,
     },
   ];
 }

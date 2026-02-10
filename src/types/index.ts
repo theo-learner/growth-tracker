@@ -30,6 +30,7 @@ export interface ActivityRecord {
   type: ActivityType;
   timestamp: string; // ISO datetime
   data: PhotoData | ActivityData | QuestionData | ReadingData | EmotionData;
+  isSample?: boolean; // 샘플 데이터 여부
 }
 
 export interface PhotoData {

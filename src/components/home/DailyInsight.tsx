@@ -36,6 +36,9 @@ export default function DailyInsight() {
   // 오늘 활동만 필터링
   const todayStr = new Date().toISOString().split("T")[0];
   const todayActivities = activities.filter((a) => a.timestamp.startsWith(todayStr));
+  
+  // 샘플 데이터 여부 확인
+  const hasOnlySampleData = todayActivities.length > 0 && todayActivities.every((a) => a.isSample);
 
   // 활동이 있을 때 분석 API 호출
   useEffect(() => {
@@ -103,6 +106,11 @@ export default function DailyInsight() {
         <h3 className="text-sm font-bold text-soft-green-600">AI 인사이트</h3>
         {loading && (
           <span className="text-xs text-mid-gray animate-pulse">분석 중...</span>
+        )}
+        {hasOnlySampleData && (
+          <span className="px-2 py-0.5 text-[10px] font-medium bg-amber-100 text-amber-600 rounded-full">
+            샘플 데이터 기반
+          </span>
         )}
       </div>
 

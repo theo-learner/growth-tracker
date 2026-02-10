@@ -8,8 +8,11 @@ import RadarChart from "./RadarChart";
  * 주간 리포트 탭 v2 — 통일된 카드 디자인 + 부드러운 레이아웃
  */
 export default function ReportTab() {
-  const { child, weeklyReport } = useStore();
+  const { child, weeklyReport, activities } = useStore();
   const childName = child?.nickname || "아이";
+  
+  // 샘플 데이터만 있는지 확인
+  const hasOnlySampleData = activities.length > 0 && activities.every((a) => a.isSample);
 
   if (!weeklyReport) {
     return (
@@ -35,9 +38,16 @@ export default function ReportTab() {
     <div className="px-5 animate-fadeIn">
       {/* 헤더 */}
       <div className="py-4">
-        <h2 className="text-xl font-bold text-dark-gray">
-          📊 {childName}의 주간 리포트
-        </h2>
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl font-bold text-dark-gray">
+            📊 {childName}의 주간 리포트
+          </h2>
+          {hasOnlySampleData && (
+            <span className="px-2 py-0.5 text-[10px] font-medium bg-amber-100 text-amber-600 rounded-full">
+              샘플
+            </span>
+          )}
+        </div>
         <p className="text-sm text-mid-gray mt-1">
           {weeklyReport.startDate} ~ {weeklyReport.endDate}
         </p>

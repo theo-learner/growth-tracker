@@ -54,6 +54,13 @@ function TimelineItem({ activity }: { activity: ActivityRecord }) {
     <div className="px-4 py-3 flex items-start gap-3 relative group">
       <span className="text-lg mt-0.5">{icon}</span>
       <div className="flex-1 min-w-0">
+        {/* 샘플 데이터 뱃지 */}
+        {activity.isSample && (
+          <span className="inline-block px-2 py-0.5 mb-1 text-[10px] font-medium 
+                         bg-amber-100 text-amber-600 rounded-full">
+            샘플
+          </span>
+        )}
         {/* 사진 미리보기 */}
         {photoData?.imageData && (
           <img 
