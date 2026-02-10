@@ -49,6 +49,8 @@ interface AppState {
   setHasExistingTest: (has: boolean) => void;
   completeOnboarding: () => void;
   addActivity: (activity: ActivityRecord) => void;
+  updateActivity: (id: string, updates: Partial<ActivityRecord>) => void;
+  deleteActivity: (id: string) => void;
   resetAll: () => void;
 }
 
@@ -93,6 +95,20 @@ export const useStore = create<AppState>()(
       addActivity: (activity) =>
         set((state) => ({
           activities: [activity, ...state.activities],
+        })),
+
+      // 활동 기록 수정
+      updateActivity: (id, updates) =>
+        set((state) => ({
+          activities: state.activities.map((act) =>
+            act.id === id ? { ...act, ...updates } : act
+          ),
+        })),
+
+      // 활동 기록 삭제
+      deleteActivity: (id) =>
+        set((state) => ({
+          activities: state.activities.filter((act) => act.id !== id),
         })),
 
       // 전체 초기화

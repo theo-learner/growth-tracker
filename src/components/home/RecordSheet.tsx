@@ -49,6 +49,17 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
   const [selectedEmotion, setSelectedEmotion] = useState<{ emoji: string; label: string } | null>(null);
   // 사진용
   const [fileName, setFileName] = useState("");
+  const [imageData, setImageData] = useState<string | null>(null);
+
+  // 이미지 파일 처리
+  const handleImageSelect = (file: File) => {
+    setFileName(file.name);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImageData(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleSave = () => {
     const id = `act-${Date.now()}`;
@@ -81,7 +92,11 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
       case "photo":
         record = {
           id, type, timestamp,
-          data: { fileName: fileName || "photo.jpg", note: note.trim() || undefined },
+          data: { 
+            fileName: fileName || "photo.jpg", 
+            note: note.trim() || undefined,
+            imageData: imageData || undefined,
+          },
         };
         break;
       default:
@@ -131,11 +146,18 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   className="hidden"
                   onChange={(e) => {
                     const f = e.target.files?.[0];
-                    if (f) setFileName(f.name);
+                    if (f) handleImageSelect(f);
                   }}
                 />
-                {fileName ? (
-                  <p className="text-soft-green font-semibold">✅ {fileName}</p>
+                {imageData ? (
+                  <div className="relative">
+                    <img 
+                      src={imageData} 
+                      alt="미리보기" 
+                      className="max-h-40 mx-auto rounded-lg object-contain"
+                    />
+                    <p className="text-xs text-soft-green mt-2">✅ {fileName}</p>
+                  </div>
                 ) : (
                   <>
                     <p className="text-3xl mb-2">📷</p>

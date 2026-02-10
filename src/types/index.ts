@@ -35,6 +35,7 @@ export interface ActivityRecord {
 export interface PhotoData {
   fileName: string;
   note?: string;
+  imageData?: string; // Base64 encoded image
 }
 
 export interface ActivityData {
