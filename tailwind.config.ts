@@ -58,32 +58,28 @@ const config: Config = {
           dark: "#D4625F",
         },
 
-        // ─── 6개 발달 영역별 고유 색상 (레이더 차트/뱃지용) ───
+        // ─── 웩슬러 5대 영역별 고유 색상 (레이더 차트/뱃지용) ───
         "domain": {
-          // 언어 (Language) — 따뜻한 블루
-          "language": "#5B9BD5",
-          "language-light": "#D6E8F7",
-          "language-bg": "#EEF4FB",
-          // 시지각 (Visuospatial) — 보라/퍼플
-          "visuospatial": "#9B72CF",
-          "visuospatial-light": "#E6D9F5",
-          "visuospatial-bg": "#F3EDF9",
+          // 언어이해 (Verbal Comprehension) — 따뜻한 블루
+          "verbalComprehension": "#5B9BD5",
+          "verbalComprehension-light": "#D6E8F7",
+          "verbalComprehension-bg": "#EEF4FB",
+          // 시공간 (Visual Spatial) — 보라/퍼플
+          "visualSpatial": "#9B72CF",
+          "visualSpatial-light": "#E6D9F5",
+          "visualSpatial-bg": "#F3EDF9",
+          // 유동추론 (Fluid Reasoning) — 틸/청록
+          "fluidReasoning": "#4BBFA0",
+          "fluidReasoning-light": "#C9F0E2",
+          "fluidReasoning-bg": "#EEFAF5",
           // 작업기억 (Working Memory) — 오렌지
-          "memory": "#E8935A",
-          "memory-light": "#FAE0CC",
-          "memory-bg": "#FDF2EA",
+          "workingMemory": "#E8935A",
+          "workingMemory-light": "#FAE0CC",
+          "workingMemory-bg": "#FDF2EA",
           // 처리속도 (Processing Speed) — 핑크/코럴
-          "speed": "#E07788",
-          "speed-light": "#FADCE1",
-          "speed-bg": "#FDF0F2",
-          // 논리 (Logic) — 틸/청록
-          "logic": "#4BBFA0",
-          "logic-light": "#C9F0E2",
-          "logic-bg": "#EEFAF5",
-          // 소근육 (Fine Motor) — 골든 옐로우
-          "motor": "#D4A520",
-          "motor-light": "#F5E6B8",
-          "motor-bg": "#FDF8EC",
+          "processingSpeed": "#E07788",
+          "processingSpeed-light": "#FADCE1",
+          "processingSpeed-bg": "#FDF0F2",
         },
 
         // ─── Neutral — 텍스트/구분선 ───

@@ -19,8 +19,8 @@ interface RadarChartProps {
  */
 export default function RadarChart({ scores, prevScores }: RadarChartProps) {
   const domains: DomainKey[] = [
-    "language", "visuospatial", "workingMemory",
-    "processingSpeed", "logic", "fineMotor",
+    "verbalComprehension", "visualSpatial", "fluidReasoning",
+    "workingMemory", "processingSpeed",
   ];
 
   const data = domains.map((key) => ({

@@ -156,40 +156,37 @@ export function generateSampleActivities(childName: string): ActivityRecord[] {
   ];
 }
 
-// 주간 리포트 샘플
+// 주간 리포트 샘플 (웩슬러 5대 영역 적용)
 export function generateSampleWeeklyReport(_childName: string): WeeklyReport {
   return {
     weekLabel: "2월 1주차",
     startDate: "2026-02-01",
     endDate: "2026-02-07",
     scores: {
-      language: 75,
-      visuospatial: 82,
+      verbalComprehension: 75,
+      visualSpatial: 82,
       workingMemory: 70,
       processingSpeed: 78,
-      logic: 68,
-      fineMotor: 72,
+      fluidReasoning: 68,
     },
     prevScores: {
-      language: 72,
-      visuospatial: 77,
+      verbalComprehension: 72,
+      visualSpatial: 77,
       workingMemory: 71,
       processingSpeed: 70,
-      logic: 66,
-      fineMotor: 70,
+      fluidReasoning: 66,
     },
     highlights: [
-      `🧩 퍼즐 시간이 4분 단축됐어요! (52분 → 48분)`,
-      `💬 "왜?" 질문이 하루 평균 3회 → 5회로 늘었어요`,
-      `📖 이번 주 책 4권 읽었어요!`,
+      `🧩 퍼즐 시간이 4분 단축됐어요! (처리속도 향상)`,
+      `💬 "왜?" 질문이 하루 평균 3회 → 5회로 늘었어요 (유동추론 자극)`,
+      `📖 이번 주 책 4권 읽었어요! (언어이해 강화)`,
     ],
     bands: {
-      language: { band: "상위 15~25%", trend: "up" },
-      visuospatial: { band: "상위 10~20%", trend: "up" },
+      verbalComprehension: { band: "상위 15~25%", trend: "up" },
+      visualSpatial: { band: "상위 10~20%", trend: "up" },
       workingMemory: { band: "상위 25~35%", trend: "stable" },
       processingSpeed: { band: "상위 20~30%", trend: "up" },
-      logic: { band: "상위 30~40%", trend: "stable" },
-      fineMotor: { band: "상위 20~30%", trend: "up" },
+      fluidReasoning: { band: "상위 30~40%", trend: "stable" },
     },
   };
 }
@@ -201,23 +198,23 @@ export function generateSampleRecommendations(_childName: string): RecommendedAc
       title: "100조각 퍼즐 도전하기",
       description: `72조각을 48분에 완성했으니, 100조각도 도전해볼 때예요!`,
       reason: "시공간 + 처리속도 향상",
-      domains: ["시지각", "처리속도"],
+      domains: ["visualSpatial", "processingSpeed"],
       duration: "50~60분",
       icon: "🧩",
     },
     {
       title: "과학 그림책 함께 읽기",
       description: `달에 대해 궁금해하고 있으니 호기심을 키워줄 수 있어요`,
-      reason: "언어 + 논리 향상",
-      domains: ["언어", "논리"],
+      reason: "언어이해 + 유동추론 향상",
+      domains: ["verbalComprehension", "fluidReasoning"],
       duration: "20~30분",
       icon: "📖",
     },
     {
       title: "가위로 곡선 오리기",
       description: `소근육이 빠르게 자라고 있어서 한 단계 올려봐요`,
-      reason: "소근육 + 집중력 향상",
-      domains: ["소근육"],
+      reason: "소근육(처리속도 기반) + 집중력 향상",
+      domains: ["processingSpeed"],
       duration: "15~20분",
       icon: "✂️",
     },
@@ -256,34 +253,34 @@ export function generateSampleMonthlyData(): MonthlyDataPoint[] {
   return [
     {
       month: "11월",
-      scores: { language: 58, visuospatial: 60, workingMemory: 55, processingSpeed: 52, logic: 50, fineMotor: 54 },
+      scores: { verbalComprehension: 58, visualSpatial: 60, workingMemory: 55, processingSpeed: 52, fluidReasoning: 50 },
     },
     {
       month: "12월",
-      scores: { language: 63, visuospatial: 68, workingMemory: 60, processingSpeed: 60, logic: 55, fineMotor: 60 },
+      scores: { verbalComprehension: 63, visualSpatial: 68, workingMemory: 60, processingSpeed: 60, fluidReasoning: 55 },
     },
     {
       month: "1월",
-      scores: { language: 70, visuospatial: 75, workingMemory: 66, processingSpeed: 70, logic: 62, fineMotor: 66 },
+      scores: { verbalComprehension: 70, visualSpatial: 75, workingMemory: 66, processingSpeed: 70, fluidReasoning: 62 },
     },
     {
       month: "2월",
-      scores: { language: 75, visuospatial: 82, workingMemory: 70, processingSpeed: 78, logic: 68, fineMotor: 72 },
+      scores: { verbalComprehension: 75, visualSpatial: 82, workingMemory: 70, processingSpeed: 78, fluidReasoning: 68 },
     },
     {
       month: "3월",
       predicted: true,
-      scores: { language: 79, visuospatial: 86, workingMemory: 73, processingSpeed: 82, logic: 72, fineMotor: 76 },
+      scores: { verbalComprehension: 79, visualSpatial: 86, workingMemory: 73, processingSpeed: 82, fluidReasoning: 72 },
     },
     {
       month: "4월",
       predicted: true,
-      scores: { language: 82, visuospatial: 89, workingMemory: 76, processingSpeed: 85, logic: 75, fineMotor: 79 },
+      scores: { verbalComprehension: 82, visualSpatial: 89, workingMemory: 76, processingSpeed: 85, fluidReasoning: 75 },
     },
     {
       month: "5월",
       predicted: true,
-      scores: { language: 85, visuospatial: 91, workingMemory: 78, processingSpeed: 87, logic: 78, fineMotor: 82 },
+      scores: { verbalComprehension: 85, visualSpatial: 91, workingMemory: 78, processingSpeed: 87, fluidReasoning: 78 },
     },
   ];
 }
@@ -306,13 +303,13 @@ export const PRESET_ANALYSIS = {
         type: "progress" as const,
         icon: "📈",
         message: "퍼즐 완성 시간이 지난주보다 4분 빨라졌어요. 처리 속도가 꾸준히 좋아지고 있어요!",
-        domain: "처리속도",
+        domain: "processingSpeed",
       },
       {
         type: "observation" as const,
         icon: "💡",
-        message: '"왜 달은 낮에도 있어?" — 과학적 사고의 시작이에요! 이런 질문을 많이 하면 논리력이 쑥쑥 자라요.',
-        domain: "논리",
+        message: '"왜 달은 낮에도 있어?" — 과학적 사고의 시작이에요! 이런 질문을 많이 하면 유동추론 능력이 쑥쑥 자라요.',
+        domain: "fluidReasoning",
       },
       {
         type: "encouragement" as const,
@@ -322,5 +319,12 @@ export const PRESET_ANALYSIS = {
       },
     ],
     todayTip: "오늘은 블록 놀이를 해보세요. 시공간 능력과 처리속도를 동시에 자극할 수 있어요.",
+  },
+  domainScores: {
+    verbalComprehension: 75,
+    visualSpatial: 82,
+    workingMemory: 70,
+    processingSpeed: 78,
+    fluidReasoning: 68,
   },
 };

@@ -63,16 +63,15 @@ export interface EmotionData {
   note?: string;
 }
 
-// 6개 발달 영역
-export type DomainKey = "language" | "visuospatial" | "workingMemory" | "processingSpeed" | "logic" | "fineMotor";
+// 웩슬러 유아 지능검사(K-WPPSI-IV) 기반 5대 영역
+export type DomainKey = "verbalComprehension" | "visualSpatial" | "fluidReasoning" | "workingMemory" | "processingSpeed";
 
 export const DOMAIN_LABELS: Record<DomainKey, string> = {
-  language: "언어",
-  visuospatial: "시지각",
+  verbalComprehension: "언어이해",
+  visualSpatial: "시공간",
+  fluidReasoning: "유동추론",
   workingMemory: "작업기억",
   processingSpeed: "처리속도",
-  logic: "논리",
-  fineMotor: "소근육",
 };
 
 // 주간 리포트

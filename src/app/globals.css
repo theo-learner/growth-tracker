@@ -24,12 +24,11 @@
   --gradient-warm-highlight: linear-gradient(135deg, #FFFDF5 0%, #FFF8E0 100%);
 
   /* 6개 발달 영역 색상 변수 (차트/JS에서 참조용) */
-  --color-language: #5B9BD5;
-  --color-visuospatial: #9B72CF;
-  --color-memory: #E8935A;
-  --color-speed: #E07788;
-  --color-logic: #4BBFA0;
-  --color-motor: #D4A520;
+  --color-verbalComprehension: #5B9BD5;
+  --color-visualSpatial: #9B72CF;
+  --color-fluidReasoning: #4BBFA0;
+  --color-workingMemory: #E8935A;
+  --color-processingSpeed: #E07788;
 }
 
 /* ─── 기본 스타일 ─── */
@@ -232,12 +231,11 @@ input, textarea, button, select {
   }
 
   /* 발달 영역별 뱃지 */
-  .badge-domain-language    { @apply bg-domain-language-bg text-domain-language border border-domain-language-light; }
-  .badge-domain-visuospatial { @apply bg-domain-visuospatial-bg text-domain-visuospatial border border-domain-visuospatial-light; }
-  .badge-domain-memory      { @apply bg-domain-memory-bg text-domain-memory border border-domain-memory-light; }
-  .badge-domain-speed       { @apply bg-domain-speed-bg text-domain-speed border border-domain-speed-light; }
-  .badge-domain-logic       { @apply bg-domain-logic-bg text-domain-logic border border-domain-logic-light; }
-  .badge-domain-motor       { @apply bg-domain-motor-bg text-domain-motor border border-domain-motor-light; }
+  .badge-domain-verbalComprehension { @apply bg-domain-verbalComprehension-bg text-domain-verbalComprehension border border-domain-verbalComprehension-light; }
+  .badge-domain-visualSpatial       { @apply bg-domain-visualSpatial-bg text-domain-visualSpatial border border-domain-visualSpatial-light; }
+  .badge-domain-fluidReasoning      { @apply bg-domain-fluidReasoning-bg text-domain-fluidReasoning border border-domain-fluidReasoning-light; }
+  .badge-domain-workingMemory       { @apply bg-domain-workingMemory-bg text-domain-workingMemory border border-domain-workingMemory-light; }
+  .badge-domain-processingSpeed     { @apply bg-domain-processingSpeed-bg text-domain-processingSpeed border border-domain-processingSpeed-light; }
 
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
