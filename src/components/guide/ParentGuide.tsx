@@ -140,17 +140,22 @@ export default function ParentGuide({ onClose }: { onClose: () => void }) {
 
           {/* 추가 자료 링크 */}
           <div className="mt-6 p-4 bg-calm-blue-light/50 rounded-card">
-            <p className="text-sm font-semibold mb-2">📎 더 알아보기</p>
+            <p className="text-sm font-semibold mb-2">📎 더 알아보기 (대한민국 공식 자료)</p>
             <div className="space-y-2 text-sm">
-              <a href="https://www.cdc.gov/ncbddd/childdevelopment/facts.html" 
+              <a href="https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5270" 
                  target="_blank" rel="noopener noreferrer"
                  className="block text-calm-blue hover:underline">
-                • CDC 아동 발달 가이드 (영문)
+                • 질병관리청 소아 성장/발달 가이드
               </a>
-              <a href="https://www.nhis.or.kr" 
+              <a href="https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do" 
                  target="_blank" rel="noopener noreferrer"
                  className="block text-calm-blue hover:underline">
-                • 국민건강보험공단 영유아 검진
+                • 국민건강보험공단 영유아 건강검진 안내
+              </a>
+              <a href="http://central.childcare.go.kr/ccef/community/parentData/ParentDataSl.jsp" 
+                 target="_blank" rel="noopener noreferrer"
+                 className="block text-calm-blue hover:underline">
+                • 중앙육아종합지원센터 육아 정보
               </a>
             </div>
           </div>
