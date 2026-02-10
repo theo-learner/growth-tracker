@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
 import { RecommendedActivity, RecommendedProduct } from "@/types";
+import { callApi } from "@/lib/api-client";
 
 /**
  * AI 맞춤 추천 탭 — API 연동 + 새로고침 기능
@@ -26,16 +27,13 @@ export default function RecommendTab() {
   const refreshRecommendations = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/recommend", {
+      const data = await callApi("/api/recommend", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           childProfile: child,
           weeklyReport: weeklyReport,
         }),
       });
-      if (!res.ok) throw new Error("추천 로드 실패");
-      const data = await res.json();
       setRecommendations(data.activities || []);
       setProducts(data.products || []);
       setLastUpdated(new Date().toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" }));

@@ -104,6 +104,7 @@ export async function POST(request: NextRequest) {
             
             // 링크 동적 생성 주입
             if (parsed.products && Array.isArray(parsed.products)) {
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
               parsed.products = parsed.products.map((p: any) => ({
                 ...p,
                 link: generateCoupangLink(p.name),

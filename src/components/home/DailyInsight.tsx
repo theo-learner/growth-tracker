@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
+import { callApi } from "@/lib/api-client";
 
 interface Insight {
   type: string;
@@ -51,16 +52,13 @@ export default function DailyInsight() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/analyze", {
+        const data = await callApi("/api/analyze", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             activities: todayActivities,
             childProfile: child,
           }),
         });
-        if (!res.ok) throw new Error("분석 실패");
-        const data = await res.json();
         setAnalysis(data);
       } catch {
         setError("분석을 불러오지 못했어요");
