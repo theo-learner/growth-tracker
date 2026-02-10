@@ -27,13 +27,18 @@ interface AppState {
   onboardingComplete: boolean;
   onboardingStep: number;
 
-  // 아이 프로필
+  // 다자녀 지원
+  children: ChildProfile[];
+  activeChildId: string | null;
+  
+  // 현재 선택된 아이 프로필 (computed)
   child: ChildProfile | null;
   temperament: TemperamentAnswers | null;
   hasExistingTest: boolean;
 
-  // 활동 기록
+  // 활동 기록 (activeChildId 기준)
   activities: ActivityRecord[];
+  allActivities: Record<string, ActivityRecord[]>; // childId -> activities
 
   // 리포트 & 추천
   weeklyReport: WeeklyReport | null;
@@ -51,6 +56,12 @@ interface AppState {
   addActivity: (activity: ActivityRecord) => void;
   updateActivity: (id: string, updates: Partial<ActivityRecord>) => void;
   deleteActivity: (id: string) => void;
+  
+  // 다자녀 관리
+  addChild: (child: ChildProfile) => void;
+  switchChild: (childId: string) => void;
+  removeChild: (childId: string) => void;
+  
   resetAll: () => void;
 }
 
@@ -60,10 +71,18 @@ export const useStore = create<AppState>()(
       // 초기 상태
       onboardingComplete: false,
       onboardingStep: 1,
+      
+      // 다자녀 지원
+      children: [],
+      activeChildId: null,
+      allActivities: {},
+      
+      // 현재 선택된 아이 (직접 관리)
       child: null,
       temperament: null,
       hasExistingTest: false,
       activities: [],
+      
       weeklyReport: null,
       recommendations: [],
       products: [],
@@ -78,11 +97,27 @@ export const useStore = create<AppState>()(
 
       // 온보딩 완료 → 샘플 데이터 자동 생성
       completeOnboarding: () => {
-        const child = get().child;
+        const state = get();
+        const child = state.child;
         const name = child?.nickname || "아이";
+        const sampleActivities = generateSampleActivities(name);
+        
+        // 다자녀 지원: children 배열에 추가
+        const newChildren = child && !state.children.find(c => c.id === child.id)
+          ? [...state.children, child]
+          : state.children;
+        
+        const newAllActivities = { ...state.allActivities };
+        if (child) {
+          newAllActivities[child.id] = sampleActivities;
+        }
+        
         set({
           onboardingComplete: true,
-          activities: generateSampleActivities(name),
+          children: newChildren,
+          activeChildId: child?.id || null,
+          activities: sampleActivities,
+          allActivities: newAllActivities,
           weeklyReport: generateSampleWeeklyReport(name),
           recommendations: generateSampleRecommendations(name),
           products: generateSampleProducts(),
@@ -93,9 +128,14 @@ export const useStore = create<AppState>()(
 
       // 활동 기록 추가
       addActivity: (activity) =>
-        set((state) => ({
-          activities: [activity, ...state.activities],
-        })),
+        set((state) => {
+          const newActivities = [activity, ...state.activities];
+          const newAllActivities = { ...state.allActivities };
+          if (state.activeChildId) {
+            newAllActivities[state.activeChildId] = newActivities;
+          }
+          return { activities: newActivities, allActivities: newAllActivities };
+        }),
 
       // 활동 기록 수정
       updateActivity: (id, updates) =>
@@ -107,9 +147,72 @@ export const useStore = create<AppState>()(
 
       // 활동 기록 삭제
       deleteActivity: (id) =>
+        set((state) => {
+          const newActivities = state.activities.filter((act) => act.id !== id);
+          const newAllActivities = { ...state.allActivities };
+          if (state.activeChildId) {
+            newAllActivities[state.activeChildId] = newActivities;
+          }
+          return { activities: newActivities, allActivities: newAllActivities };
+        }),
+
+      // 다자녀 관리: 아이 추가
+      addChild: (child) =>
         set((state) => ({
-          activities: state.activities.filter((act) => act.id !== id),
+          children: [...state.children, child],
+          activeChildId: child.id,
+          child: child,
+          activities: [],
+          allActivities: { ...state.allActivities, [child.id]: [] },
         })),
+
+      // 다자녀 관리: 아이 전환
+      switchChild: (childId) =>
+        set((state) => {
+          const targetChild = state.children.find((c) => c.id === childId);
+          if (!targetChild) return state;
+          
+          // 현재 아이의 활동 저장
+          const updatedAllActivities = { ...state.allActivities };
+          if (state.activeChildId) {
+            updatedAllActivities[state.activeChildId] = state.activities;
+          }
+          
+          return {
+            activeChildId: childId,
+            child: targetChild,
+            activities: updatedAllActivities[childId] || [],
+            allActivities: updatedAllActivities,
+          };
+        }),
+
+      // 다자녀 관리: 아이 삭제
+      removeChild: (childId) =>
+        set((state) => {
+          const newChildren = state.children.filter((c) => c.id !== childId);
+          const newAllActivities = { ...state.allActivities };
+          delete newAllActivities[childId];
+          
+          // 삭제된 아이가 현재 선택된 아이면 다른 아이로 전환
+          let newActiveChildId = state.activeChildId;
+          let newChild = state.child;
+          let newActivities = state.activities;
+          
+          if (state.activeChildId === childId) {
+            newActiveChildId = newChildren.length > 0 ? newChildren[0].id : null;
+            newChild = newChildren.length > 0 ? newChildren[0] : null;
+            newActivities = newActiveChildId ? (newAllActivities[newActiveChildId] || []) : [];
+          }
+          
+          return {
+            children: newChildren,
+            activeChildId: newActiveChildId,
+            child: newChild,
+            activities: newActivities,
+            allActivities: newAllActivities,
+            onboardingComplete: newChildren.length > 0,
+          };
+        }),
 
       // 전체 초기화
       resetAll: () =>

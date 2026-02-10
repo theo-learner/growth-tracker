@@ -59,7 +59,7 @@ export default function DailyInsight() {
         if (!res.ok) throw new Error("분석 실패");
         const data = await res.json();
         setAnalysis(data);
-      } catch (e) {
+      } catch {
         setError("분석을 불러오지 못했어요");
         setAnalysis(FALLBACK_ANALYSIS);
       } finally {
@@ -68,6 +68,7 @@ export default function DailyInsight() {
     };
 
     fetchAnalysis();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayActivities.length]);
 
   // 기록이 없으면 안내 메시지

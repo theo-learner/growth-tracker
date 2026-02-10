@@ -6,6 +6,7 @@ import ReportTab from "@/components/report/ReportTab";
 import RecommendTab from "@/components/recommend/RecommendTab";
 import MonthlyTab from "@/components/monthly/MonthlyTab";
 import SettingsModal from "@/components/ui/SettingsModal";
+import ParentGuide from "@/components/guide/ParentGuide";
 
 type Tab = "home" | "report" | "recommend" | "monthly";
 
@@ -23,6 +24,7 @@ const TABS: { id: Tab; icon: string; iconActive: string; label: string }[] = [
 export default function MainApp() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
   const [showSettings, setShowSettings] = useState(false);
+  const [showGuide, setShowGuide] = useState(false);
 
   return (
     <div className="min-h-screen flex flex-col bg-warm-beige">
@@ -32,18 +34,29 @@ export default function MainApp() {
           <span className="text-xl">🌱</span>
           <span className="text-sm font-semibold text-soft-green hidden">성장 트래커</span>
         </div>
-        <button
-          onClick={() => setShowSettings(true)}
-          className="w-9 h-9 rounded-full bg-white/80 shadow-badge
-                     flex items-center justify-center
-                     hover:shadow-card transition-all duration-200"
-          aria-label="설정"
-        >
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowGuide(true)}
+            className="w-9 h-9 rounded-full bg-white/80 shadow-badge
+                       flex items-center justify-center
+                       hover:shadow-card transition-all duration-200"
+            aria-label="가이드"
+          >
+            <span className="text-sm">📚</span>
+          </button>
+          <button
+            onClick={() => setShowSettings(true)}
+            className="w-9 h-9 rounded-full bg-white/80 shadow-badge
+                       flex items-center justify-center
+                       hover:shadow-card transition-all duration-200"
+            aria-label="설정"
+          >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
             <path d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z" stroke="#888" strokeWidth="1.5" strokeLinecap="round"/>
             <path d="M7.3 2.1L7.65 3.15C7.85 3.7 7.55 4.3 7 4.5L6.5 4.7C5.95 4.9 5.35 4.6 5.15 4.05L4.8 3M10.7 2.1L10.35 3.15C10.15 3.7 10.45 4.3 11 4.5L11.5 4.7C12.05 4.9 12.65 4.6 12.85 4.05L13.2 3" stroke="#888" strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
           </svg>
-        </button>
+          </button>
+        </div>
       </header>
 
       {/* 메인 콘텐츠 영역 */}
@@ -100,6 +113,9 @@ export default function MainApp() {
 
       {/* 설정 모달 */}
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
+      
+      {/* 부모 가이드 모달 */}
+      {showGuide && <ParentGuide onClose={() => setShowGuide(false)} />}
     </div>
   );
 }
