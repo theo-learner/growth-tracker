@@ -219,6 +219,9 @@ export const useStore = create<AppState>()(
         set({
           onboardingComplete: false,
           onboardingStep: 1,
+          children: [],
+          activeChildId: null,
+          allActivities: {},
           child: null,
           temperament: null,
           hasExistingTest: false,

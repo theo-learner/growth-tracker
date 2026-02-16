@@ -11,6 +11,7 @@ import { ChildProfile } from "@/types";
 export default function Step1ChildInfo() {
   const { setChild, setOnboardingStep } = useStore();
   const [nickname, setNickname] = useState("");
+  const [birthDate, setBirthDate] = useState("");
   const [age, setAge] = useState<4 | 5 | 6 | null>(null);
   const [gender, setGender] = useState<"male" | "female" | "unknown" | null>(null);
 
@@ -22,6 +23,7 @@ export default function Step1ChildInfo() {
       id: `child-${Date.now()}`,
       nickname: nickname.trim(),
       age: age!,
+      birthDate: birthDate || undefined,
       gender: gender!,
       createdAt: new Date().toISOString(),
     };
@@ -70,6 +72,20 @@ export default function Step1ChildInfo() {
             ✓ {nickname.trim()}(이)의 성장 이야기가 시작돼요!
           </p>
         )}
+      </div>
+
+      {/* 생년월일 입력 */}
+      <div className="mb-6">
+        <label className="block text-sm font-semibold text-dark-gray mb-2">
+          생년월일 <span className="text-xs font-normal text-mid-gray">(선택, K-DST 월령 계산용)</span>
+        </label>
+        <input
+          type="date"
+          value={birthDate}
+          onChange={(e) => setBirthDate(e.target.value)}
+          className="input-field"
+          max={new Date().toISOString().split("T")[0]}
+        />
       </div>
 
       {/* 나이 선택 — 카드형 */}

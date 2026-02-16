@@ -6,8 +6,8 @@ import { DomainKey, DOMAIN_LABELS } from "@/types";
 import TrendChart from "./TrendChart";
 
 const ALL_DOMAINS: DomainKey[] = [
-  "language", "visuospatial", "workingMemory",
-  "processingSpeed", "logic", "fineMotor",
+  "verbalComprehension", "visualSpatial", "fluidReasoning",
+  "workingMemory", "processingSpeed",
 ];
 
 /**

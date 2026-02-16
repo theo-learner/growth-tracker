@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
-import { RecommendedActivity, RecommendedProduct } from "@/types";
+import { RecommendedActivity, RecommendedProduct, ActivityRecord } from "@/types";
 import { callApi } from "@/lib/api-client";
 
 /**
  * AI 맞춤 추천 탭 — API 연동 + 새로고침 기능
  */
 export default function RecommendTab() {
-  const { child, weeklyReport, recommendations: storeRecs, products: storeProds } = useStore();
+  const { child, weeklyReport, recommendations: storeRecs, products: storeProds, addActivity } = useStore();
   const childName = child?.nickname || "아이";
   
   const [recommendations, setRecommendations] = useState<RecommendedActivity[]>(storeRecs);
@@ -98,7 +98,22 @@ export default function RecommendTab() {
                     </div>
                   </div>
                 </div>
-                <button className="w-full mt-4 py-2.5 bg-soft-green-50 text-soft-green-600
+                <button
+                  onClick={() => {
+                    const record: ActivityRecord = {
+                      id: `act-${Date.now()}`,
+                      type: "activity",
+                      timestamp: new Date().toISOString(),
+                      data: {
+                        category: rec.title,
+                        durationMin: parseInt(rec.duration) || 30,
+                        detail: rec.description,
+                      },
+                    };
+                    addActivity(record);
+                    alert(`"${rec.title}" 활동이 기록에 추가되었어요! 🎉`);
+                  }}
+                  className="w-full mt-4 py-2.5 bg-soft-green-50 text-soft-green-600
                                  rounded-button text-sm font-bold
                                  border border-soft-green-100/50
                                  hover:bg-soft-green-100 hover:text-soft-green-700

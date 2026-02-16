@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { KDST_DATA, calculateMonths, getKDSTChecklist } from "@/data/k-dst";
+import { calculateMonths, getKDSTChecklist } from "@/data/k-dst";
 
 /**
  * POST /api/analyze — 기록 기반 발달 분석 (K-DST 기준 적용)
@@ -18,7 +18,7 @@ const PRESET_RESPONSE = {
       type: "observation",
       icon: "💡",
       message: '"왜 달은 낮에도 있어?" — 과학적 사고의 시작이에요! 이런 질문을 많이 하면 논리력이 쑥쑥 자라요.',
-      domain: "logic",
+      domain: "fluidReasoning",
     },
     {
       type: "encouragement",
@@ -29,12 +29,11 @@ const PRESET_RESPONSE = {
   ],
   todayTip: "오늘은 블록 놀이를 해보세요. 시공간 능력과 처리속도를 동시에 자극할 수 있어요.",
   domainScores: {
-    language: 75,
-    visuospatial: 82,
+    verbalComprehension: 75,
+    visualSpatial: 82,
+    fluidReasoning: 68,
     workingMemory: 70,
     processingSpeed: 78,
-    logic: 68,
-    fineMotor: 72,
   },
 };
 
