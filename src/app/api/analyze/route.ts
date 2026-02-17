@@ -109,7 +109,7 @@ JSON 형식으로 응답:
         }
       } catch {
         // AI 분석 실패 시 프리셋으로 fallback
-        console.log("AI analyze failed, using preset");
+        // AI analyze failed, using preset fallback
       }
     }
 

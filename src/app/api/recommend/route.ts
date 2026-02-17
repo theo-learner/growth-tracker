@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
           }
         }
       } catch {
-        console.log("AI recommend failed, using preset");
+        // AI recommend failed, using preset fallback
       }
     }
 

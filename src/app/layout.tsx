@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ClientErrorBoundary } from "@/components/ClientErrorBoundary";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -36,9 +37,11 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
       <body className="font-pretendard antialiased bg-warm-beige text-dark-gray min-h-screen">
-        <div className="max-w-[430px] mx-auto min-h-screen relative">
-          {children}
-        </div>
+        <ClientErrorBoundary>
+          <div className="max-w-[430px] mx-auto min-h-screen relative">
+            {children}
+          </div>
+        </ClientErrorBoundary>
         {/* Service Worker 등록 */}
         <script
           dangerouslySetInnerHTML={{
