@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import Image from "next/image";
 import { useStore } from "@/store/useStore";
 import { ActivityType, ActivityRecord } from "@/types";
 
@@ -151,10 +152,13 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                 />
                 {imageData ? (
                   <div className="relative">
-                    <img 
+                    <Image 
                       src={imageData} 
                       alt="미리보기" 
+                      width={320}
+                      height={160}
                       className="max-h-40 mx-auto rounded-lg object-contain"
+                      unoptimized
                     />
                     <p className="text-xs text-soft-green mt-2">✅ {fileName}</p>
                   </div>

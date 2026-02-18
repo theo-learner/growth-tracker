@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ActivityRecord, ActivityData, QuestionData, ReadingData, EmotionData, PhotoData } from "@/types";
 import { useStore } from "@/store/useStore";
 
@@ -63,10 +64,13 @@ function TimelineItem({ activity }: { activity: ActivityRecord }) {
         )}
         {/* 사진 미리보기 */}
         {photoData?.imageData && (
-          <img 
+          <Image 
             src={photoData.imageData} 
             alt="기록 사진" 
+            width={200}
+            height={200}
             className="w-full max-w-[200px] h-auto rounded-lg mb-2 object-cover"
+            unoptimized
           />
         )}
         <p className="text-sm text-dark-gray leading-relaxed">{text}</p>
