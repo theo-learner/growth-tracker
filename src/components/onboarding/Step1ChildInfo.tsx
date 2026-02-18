@@ -76,10 +76,11 @@ export default function Step1ChildInfo() {
 
       {/* 생년월일 입력 */}
       <div className="mb-6">
-        <label className="block text-sm font-semibold text-dark-gray mb-2">
-          생년월일 <span className="text-xs font-normal text-mid-gray">(선택, K-DST 월령 계산용)</span>
+        <label htmlFor="birthDate" className="block text-sm font-semibold text-dark-gray mb-2">
+          생년월일 <span className="text-xs font-normal text-dark-gray/60">(선택, K-DST 월령 계산용)</span>
         </label>
         <input
+          id="birthDate"
           type="date"
           value={birthDate}
           onChange={(e) => setBirthDate(e.target.value)}

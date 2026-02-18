@@ -19,8 +19,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
   themeColor: "#7CB587",
 };
 
@@ -38,9 +38,9 @@ export default function RootLayout({
       </head>
       <body className="font-pretendard antialiased bg-warm-beige text-dark-gray min-h-screen">
         <ClientErrorBoundary>
-          <div className="max-w-[430px] mx-auto min-h-screen relative">
+          <main className="max-w-[430px] mx-auto min-h-screen relative">
             {children}
-          </div>
+          </main>
         </ClientErrorBoundary>
         {/* Service Worker 등록 */}
         <script

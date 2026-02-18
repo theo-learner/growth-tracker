@@ -309,7 +309,7 @@ input, textarea, button, select {
     @apply text-soft-green;
   }
   .step-label-pending {
-    @apply text-mid-gray;
+    @apply text-dark-gray/60;
   }
 
 
