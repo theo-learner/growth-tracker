@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useStore } from "@/store/useStore";
 import { DomainKey, DOMAIN_LABELS } from "@/types";
-import TrendChart from "./TrendChart";
+const TrendChart = lazy(() => import("./TrendChart"));
 
 const ALL_DOMAINS: DomainKey[] = [
   "verbalComprehension", "visualSpatial", "fluidReasoning",
@@ -63,7 +63,9 @@ export default function MonthlyTab() {
           <div key={domain} className="chart-card">
             <h3 className="text-sm font-bold text-dark-gray mb-1">{DOMAIN_LABELS[domain]}</h3>
             <div className="chart-area">
-              <TrendChart data={monthlyData} domain={domain} />
+              <Suspense fallback={<div className="h-48 flex items-center justify-center text-sm text-mid-gray">차트 로딩 중...</div>}>
+                <TrendChart data={monthlyData} domain={domain} />
+              </Suspense>
             </div>
           </div>
         ))}

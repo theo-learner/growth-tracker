@@ -1,8 +1,9 @@
 "use client";
 
+import { lazy, Suspense } from "react";
 import { useStore } from "@/store/useStore";
 import { DOMAIN_LABELS, DomainKey } from "@/types";
-import RadarChart from "./RadarChart";
+const RadarChart = lazy(() => import("./RadarChart"));
 
 /**
  * 주간 리포트 탭 v2 — 통일된 카드 디자인 + 부드러운 레이아웃
@@ -55,10 +56,12 @@ export default function ReportTab() {
 
       {/* 레이더 차트 카드 */}
       <div className="chart-card mb-4">
-        <RadarChart
-          scores={weeklyReport.scores}
-          prevScores={weeklyReport.prevScores}
-        />
+        <Suspense fallback={<div className="h-64 flex items-center justify-center text-sm text-mid-gray">차트 로딩 중...</div>}>
+          <RadarChart
+            scores={weeklyReport.scores}
+            prevScores={weeklyReport.prevScores}
+          />
+        </Suspense>
       </div>
 
       {/* 하이라이트 카드 — 골드 악센트 */}
