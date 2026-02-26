@@ -82,26 +82,25 @@ export default function HomeTab() {
   return (
     <div className="px-5 pb-4">
       {/* 아이 프로필 영역 */}
-      <div className="text-center py-6">
-        <div className="relative inline-block mb-3">
-          <div className="w-24 h-24 mx-auto rounded-full
+      <div className="flex flex-col items-center py-8">
+        <div className="relative">
+          <div className="w-32 h-32 rounded-full
                           bg-gradient-to-br from-primary-100 to-primary-200
-                          border-4 border-white
-                          shadow-stitch-card
-                          flex items-center justify-center text-4xl">
+                          border-4 border-white shadow-float
+                          flex items-center justify-center text-5xl">
             {avatarEmoji}
           </div>
-          {/* D+N 뱃지 */}
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2
+          {/* D+N 뱃지 — 우하단 */}
+          <div className="absolute bottom-1 right-0
                           bg-primary-50 border border-primary-100
-                          px-2.5 py-0.5 rounded-full
-                          flex items-center gap-1 whitespace-nowrap shadow-stitch-card">
-            <MaterialIcon name="favorite" size={12} className="text-primary" filled />
+                          px-2.5 py-1 rounded-full
+                          flex items-center gap-1 shadow-stitch-card">
+            <MaterialIcon name="favorite" size={11} className="text-primary" filled />
             <span className="text-[11px] font-bold text-primary-700">D+{daysCount}</span>
           </div>
         </div>
-        <h2 className="text-xl font-bold text-slate-900 mt-2">{child?.nickname}</h2>
-        <p className="text-sm text-slate-500 mt-0.5">만 {child?.age}세</p>
+        <h2 className="text-2xl font-bold text-dark-gray mt-4">{child?.nickname}</h2>
+        <p className="text-sm text-mid-gray mt-0.5">만 {child?.age}세</p>
       </div>
 
       {/* AI Daily Note (DailyInsight) */}
@@ -111,32 +110,40 @@ export default function HomeTab() {
       {topDomains.length > 0 && (
         <div className="mt-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-base font-bold text-slate-900">이번 주 발달</h3>
+            <h3 className="text-base font-bold text-dark-gray">Growth at a Glance</h3>
             <span className="text-xs font-semibold text-primary-600 cursor-default">
               {weeklyReport?.weekLabel}
             </span>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            {topDomains.map(([key, score]) => {
+            {topDomains.map(([key, score], idx) => {
               const trend = getDomainTrend(key);
               const prevScore = weeklyReport?.prevScores[key] ?? score;
               const diff = score - prevScore;
+              // Stitch: 첫 번째 primary/10, 두 번째 purple-50
+              const cardBg = idx === 0
+                ? "bg-primary-50 border-primary-100"
+                : "bg-purple-50 border-purple-100";
+              const iconBg = idx === 0
+                ? "bg-primary-100"
+                : "bg-purple-100";
+              const iconColor = idx === 0 ? "text-primary" : "text-purple-600";
               return (
                 <div key={key}
-                  className="bg-white rounded-xl border border-slate-100 shadow-stitch-card p-4 flex flex-col gap-2">
-                  <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center">
-                    <MaterialIcon name={DOMAIN_ICONS[key]} size={20} className="text-primary" />
+                  className={`${cardBg} rounded-xl border shadow-stitch-card p-4 flex flex-col gap-2`}>
+                  <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center`}>
+                    <MaterialIcon name={DOMAIN_ICONS[key]} size={20} className={iconColor} />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 font-medium uppercase tracking-wide">
+                    <p className="text-xs text-mid-gray font-medium uppercase tracking-wide">
                       {DOMAIN_LABELS[key]}
                     </p>
-                    <p className="text-xl font-bold text-slate-900">
-                      {score}<span className="text-sm font-normal text-slate-400 ml-0.5">점</span>
+                    <p className="text-xl font-bold text-dark-gray">
+                      {score}<span className="text-sm font-normal text-mid-gray ml-0.5">점</span>
                     </p>
                   </div>
                   <div className={`text-[10px] font-bold flex items-center gap-0.5 ${
-                    trend === "up" ? "text-primary-600" : trend === "down" ? "text-rose-500" : "text-slate-400"
+                    trend === "up" ? "text-primary-600" : trend === "down" ? "text-rose-500" : "text-mid-gray"
                   }`}>
                     <MaterialIcon
                       name={trend === "up" ? "trending_up" : trend === "down" ? "trending_down" : "trending_flat"}
@@ -156,7 +163,7 @@ export default function HomeTab() {
 
       {/* Quick Logs — 가로 스크롤 원형 버튼 */}
       <div className="mt-5">
-        <h3 className="text-base font-bold text-slate-900 mb-3">빠른 기록</h3>
+        <h3 className="text-base font-bold text-dark-gray mb-3">Quick Logs</h3>
         <div className="flex gap-4 overflow-x-auto pb-1 hide-scrollbar">
           {RECORD_BUTTONS.map((btn) => (
             <RecordButton
@@ -172,9 +179,9 @@ export default function HomeTab() {
 
       {/* 오늘 기록 타임라인 */}
       <div className="mt-5">
-        <h3 className="text-base font-bold text-slate-900 mb-3">
+        <h3 className="text-base font-bold text-dark-gray mb-3">
           오늘 기록 {todayActivities.length > 0 && (
-            <span className="text-sm font-normal text-slate-400">({todayActivities.length})</span>
+            <span className="text-sm font-normal text-mid-gray">({todayActivities.length})</span>
           )}
         </h3>
         <Timeline activities={todayActivities} />
