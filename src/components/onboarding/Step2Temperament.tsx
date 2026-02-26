@@ -83,22 +83,22 @@ export default function Step2Temperament() {
                 w-full py-4 px-4 rounded-card text-left
                 transition-all duration-200
                 ${q1 === opt.value
-                  ? "bg-gradient-green-soft border-2 border-soft-green shadow-btn-green/20 scale-[1.01]"
-                  : "bg-white border border-light-gray hover:border-soft-green/40 hover:shadow-card"
+                  ? "bg-primary-50 border-2 border-primary shadow-stitch-btn/20 scale-[1.01]"
+                  : "bg-white border border-light-gray hover:border-primary/40 hover:shadow-stitch-card"
                 }
               `}
             >
               <div className="flex items-center gap-3">
                 <span className="text-2xl flex-shrink-0">{opt.emoji}</span>
                 <div>
-                  <span className={`font-semibold text-sm ${q1 === opt.value ? "text-soft-green-700" : "text-dark-gray"}`}>
+                  <span className={`font-semibold text-sm ${q1 === opt.value ? "text-primary-700" : "text-dark-gray"}`}>
                     {opt.label}
                   </span>
                   <p className="text-xs text-mid-gray mt-0.5">{opt.desc}</p>
                 </div>
                 {/* 선택 체크 */}
                 {q1 === opt.value && (
-                  <div className="ml-auto w-6 h-6 rounded-full bg-soft-green flex items-center justify-center flex-shrink-0 animate-scale-in">
+                  <div className="ml-auto w-6 h-6 rounded-full bg-primary flex items-center justify-center flex-shrink-0 animate-scale-in">
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                       <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                     </svg>
@@ -125,8 +125,8 @@ export default function Step2Temperament() {
                 py-3.5 px-2 rounded-card text-center
                 transition-all duration-200
                 ${q2.includes(opt.value)
-                  ? "bg-gradient-green text-white shadow-btn-green scale-[1.03]"
-                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green/40 hover:shadow-card"
+                  ? "bg-primary text-white shadow-stitch-btn scale-[1.03]"
+                  : "bg-white text-dark-gray border border-light-gray hover:border-primary/40 hover:shadow-stitch-card"
                 }
               `}
             >
@@ -152,8 +152,8 @@ export default function Step2Temperament() {
                 py-3.5 px-2 rounded-card text-center
                 transition-all duration-200
                 ${q3.includes(opt.value)
-                  ? "bg-gradient-green text-white shadow-btn-green scale-[1.03]"
-                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green/40 hover:shadow-card"
+                  ? "bg-primary text-white shadow-stitch-btn scale-[1.03]"
+                  : "bg-white text-dark-gray border border-light-gray hover:border-primary/40 hover:shadow-stitch-card"
                 }
               `}
             >

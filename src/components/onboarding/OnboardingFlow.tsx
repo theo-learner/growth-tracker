@@ -15,7 +15,7 @@ export default function OnboardingFlow() {
   const STEP_LABELS = ["기본 정보", "기질 파악", "검사 결과"];
 
   return (
-    <div className="min-h-screen bg-warm-beige px-5 pt-10 pb-8">
+    <div className="min-h-screen bg-surface px-5 pt-10 pb-8">
       {/* ── 상단 프로그레스 인디케이터 ── */}
       <div className="mb-10 px-4">
         {/* 전체 진행률 바 */}

@@ -41,18 +41,14 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
 
   return (
     <div className="relative">
-      {/* 차트 배경 — 은은한 그린 글로우 + 동심원 장식 */}
+      {/* 차트 배경 — sky blue 글로우 */}
       <div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         aria-hidden
       >
         <div
           className="w-48 h-48 rounded-full opacity-[0.05]"
-          style={{ background: "radial-gradient(circle, #5CB87A 0%, transparent 65%)" }}
-        />
-        <div
-          className="absolute w-32 h-32 rounded-full opacity-[0.03]"
-          style={{ background: "radial-gradient(circle, #5CB87A 0%, transparent 60%)" }}
+          style={{ background: "radial-gradient(circle, #2bbdee 0%, transparent 65%)" }}
         />
       </div>
 
@@ -83,36 +79,36 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
             strokeWidth={1.5}
             strokeDasharray="5 4"
           />
-          {/* 이번 주 (실선 — 브랜드 그린 + 그라데이션 필) */}
+          {/* 이번 주 (실선 — Sky Blue + 그라데이션 필) */}
           <Radar
             name="이번 주"
             dataKey="current"
-            stroke="#5CB87A"
-            fill="url(#radarGreenGradient)"
+            stroke="#2bbdee"
+            fill="url(#radarBlueGradient)"
             fillOpacity={0.28}
             strokeWidth={2.5}
             dot={{
               r: 3.5,
-              fill: "#5CB87A",
+              fill: "#2bbdee",
               stroke: "#FFFFFF",
               strokeWidth: 2,
             }}
           />
-          {/* 그라데이션 정의 — 더 부드러운 그린 */}
+          {/* 그라데이션 정의 — Sky Blue */}
           <defs>
-            <radialGradient id="radarGreenGradient" cx="50%" cy="50%" r="50%">
-              <stop offset="0%" stopColor="#DCFCE7" stopOpacity={0.7} />
-              <stop offset="60%" stopColor="#5CB87A" stopOpacity={0.25} />
-              <stop offset="100%" stopColor="#5CB87A" stopOpacity={0.15} />
+            <radialGradient id="radarBlueGradient" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#e0f4fe" stopOpacity={0.7} />
+              <stop offset="60%" stopColor="#2bbdee" stopOpacity={0.25} />
+              <stop offset="100%" stopColor="#2bbdee" stopOpacity={0.15} />
             </radialGradient>
           </defs>
         </RechartsRadarChart>
       </ResponsiveContainer>
 
       {/* 범례 — 하단 (세련된 디자인) */}
-      <div className="flex items-center justify-center gap-6 mt-2 text-xs text-mid-gray">
+      <div className="flex items-center justify-center gap-6 mt-2 text-xs text-slate-500">
         <span className="flex items-center gap-2">
-          <span className="w-5 h-[3px] rounded-full bg-soft-green inline-block" />
+          <span className="w-5 h-[3px] rounded-full bg-primary inline-block" />
           <span className="font-medium">이번 주</span>
         </span>
         <span className="flex items-center gap-2">

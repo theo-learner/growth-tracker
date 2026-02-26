@@ -21,7 +21,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: "#7CB587",
+  themeColor: "#2bbdee",
 };
 
 export default function RootLayout({
@@ -41,11 +41,26 @@ export default function RootLayout({
           rel="stylesheet"
           href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
         />
+        {/* Material Symbols Outlined — 아이콘 폰트 */}
+        <link
+          rel="preload"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+          as="style"
+        />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
+        />
+        {/* Lexend — 보조 폰트 */}
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap"
+        />
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>
-      <body className="font-pretendard antialiased bg-warm-beige text-dark-gray min-h-screen">
+      <body className="font-pretendard antialiased bg-surface text-slate-900 min-h-screen">
         <ClientErrorBoundary>
           <main className="max-w-[430px] mx-auto min-h-screen relative">
             {children}

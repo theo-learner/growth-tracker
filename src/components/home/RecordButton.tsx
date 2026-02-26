@@ -1,15 +1,18 @@
 "use client";
 
+import MaterialIcon from "@/components/ui/MaterialIcon";
+
 interface RecordButtonProps {
-  icon: string;
+  icon: string;      // Material Symbol name
   label: string;
+  color: string;     // 원형 배경 색상 클래스 (예: "bg-blue-100 text-blue-600")
   onClick: () => void;
 }
 
 /**
- * 빠른 기록 버튼 v3 — 아이콘 + 라벨 정렬 개선, 터치 피드백 강화
+ * Quick Log 원형 버튼 — Stitch 패턴
  */
-export default function RecordButton({ icon, label, onClick }: RecordButtonProps) {
+export default function RecordButton({ icon, label, color, onClick }: RecordButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -17,16 +20,10 @@ export default function RecordButton({ icon, label, onClick }: RecordButtonProps
       aria-label={`${label} 기록하기`}
       type="button"
     >
-      {/* 아이콘 — 호버/터치시 살짝 스케일 */}
-      <span className="text-2xl record-btn-icon group-hover:scale-110 transition-transform duration-200" aria-hidden="true">
-        {icon}
-      </span>
-      {/* 라벨 — 가운데 정렬, 읽기 쉬운 크기 */}
-      <span className="text-[11px] font-semibold text-dark-gray/80 group-hover:text-dark-gray
-                        whitespace-pre-line text-center leading-tight
-                        transition-colors duration-200">
-        {label}
-      </span>
+      <div className={`record-btn-circle ${color} group-hover:scale-105`}>
+        <MaterialIcon name={icon} size={24} />
+      </div>
+      <span className="record-btn-label">{label}</span>
     </button>
   );
 }

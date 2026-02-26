@@ -1,10 +1,9 @@
 import type { Config } from "tailwindcss";
 
 // ============================================
-// AI 성장 트래커 — Tailwind 설정 v3
-// 프리미엄 부모 친화적 디자인 시스템
-// Soft Green + Warm Beige 기조
-// 6개 발달 영역별 고유 색상 (레이더 차트용)
+// AI 성장 트래커 — Tailwind 설정 v4
+// Stitch 디자인 적용: Sky Blue + Light Gray 기조
+// 기존 Soft Green, Domain 색상은 차트/영역 표시용으로 유지
 // ============================================
 
 const config: Config = {
@@ -16,7 +15,39 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ─── Primary — 자연스러운 소프트 그린 (WCAG AA 준수) ───
+        // ─── Primary — Sky Blue (Stitch 기조, WCAG AA 준수) ───
+        "primary": {
+          DEFAULT: "#2bbdee",
+          50:  "#f0faff",
+          100: "#e0f4fe",
+          200: "#b9ecfe",
+          300: "#7cdffd",
+          400: "#36cffa",
+          500: "#2bbdee",
+          600: "#0b96c9", // 흰 배경 위 텍스트: 4.51:1 (AA 충족)
+          700: "#0a78a3", // 흰 배경 위 텍스트: 7.0:1 (AAA)
+          800: "#0d6486",
+          900: "#11536f",
+        },
+
+        // ─── Surface — 라이트 그레이 배경 (Stitch 기조) ───
+        "surface": {
+          DEFAULT: "#f6f7f8",
+          50:  "#ffffff",
+          100: "#f6f7f8",
+          200: "#eef0f2",
+          300: "#e2e5e8",
+          400: "#c8cdd3",
+        },
+
+        // ─── Accent Yellow — AI 노트 등 강조용 ───
+        "accent-yellow": {
+          DEFAULT: "#fef9c3",
+          text:    "#854d0e",
+          border:  "#fef08a",
+        },
+
+        // ─── Legacy Primary — 소프트 그린 (차트/영역용으로 유지) ───
         "soft-green": {
           DEFAULT: "#2A7A42", // 개선: 4.5:1 대비율 확보 (흰색 배경)
           50: "#F0FDF4",
@@ -92,12 +123,14 @@ const config: Config = {
         pretendard: [
           "Pretendard Variable",
           "Pretendard",
+          "Lexend",
           "-apple-system",
           "BlinkMacSystemFont",
           "system-ui",
           "Roboto",
           "sans-serif",
         ],
+        lexend: ["Lexend", "Pretendard Variable", "sans-serif"],
       },
 
       borderRadius: {
@@ -129,6 +162,13 @@ const config: Config = {
         // 뱃지
         "badge":
           "0 1px 3px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.03)",
+        // Stitch 스타일 — 미니멀 그림자
+        "stitch-card":
+          "0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
+        "stitch-card-hover":
+          "0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04)",
+        "stitch-btn":
+          "0 2px 8px rgba(43,189,238,0.3), 0 4px 14px rgba(43,189,238,0.18)",
         // 탭 바 — 부드러운 올림
         "tab-bar":
           "0 -4px 20px rgba(0,0,0,0.06), 0 -1px 6px rgba(0,0,0,0.03)",
@@ -240,6 +280,9 @@ const config: Config = {
         "highlight-gradient": "linear-gradient(135deg, #FFFDF5 0%, #FFF8E0 100%)",
         "shimmer-gradient":
           "linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)",
+        // Stitch primary 그라데이션
+        "primary-gradient": "linear-gradient(135deg, #2bbdee 0%, #0b96c9 100%)",
+        "primary-soft-gradient": "linear-gradient(135deg, #e0f4fe 0%, #f0faff 100%)",
       },
       backgroundSize: {
         "shimmer": "200% 100%",

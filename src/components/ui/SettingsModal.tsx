@@ -10,6 +10,7 @@ import {
   type Reminder,
 } from "@/lib/notifications";
 import { exportActivitiesCSV, exportAllDataJSON } from "@/lib/export";
+import MaterialIcon from "@/components/ui/MaterialIcon";
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -36,7 +37,6 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
   };
 
   const handleToggleReminder = async (id: string, enabled: boolean) => {
-    // 알림 활성화 시 권한 요청
     if (enabled && notifPermission !== "granted") {
       const granted = await requestNotificationPermission();
       setNotifPermission(granted ? "granted" : "denied");
@@ -63,23 +63,34 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
 
         <div className="px-5 pb-8">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-bold">⚙️ 설정</h3>
-            <button onClick={onClose} className="text-mid-gray text-xl">✕</button>
+            <div className="flex items-center gap-2">
+              <MaterialIcon name="settings" size={20} className="text-primary" />
+              <h3 className="text-lg font-bold">설정</h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
+            >
+              <MaterialIcon name="close" size={18} />
+            </button>
           </div>
 
           {/* 아이 선택 (다자녀 지원) */}
           {children.length > 1 && (
-            <div className="bg-warm-beige rounded-card p-4 mb-4">
-              <h4 className="text-sm font-semibold mb-3">👨‍👩‍👧‍👦 아이 선택</h4>
+            <div className="bg-surface rounded-xl p-4 mb-4">
+              <h4 className="text-sm font-semibold mb-3 flex items-center gap-1.5">
+                <MaterialIcon name="family_restroom" size={16} className="text-primary" />
+                아이 선택
+              </h4>
               <div className="flex flex-wrap gap-2">
                 {children.map((c) => (
                   <button
                     key={c.id}
                     onClick={() => switchChild(c.id)}
                     className={`px-4 py-2 rounded-full text-sm font-medium transition-all
-                      ${activeChildId === c.id 
-                        ? "bg-soft-green text-white" 
-                        : "bg-white border border-light-gray hover:border-soft-green/40"
+                      ${activeChildId === c.id
+                        ? "bg-primary text-white shadow-stitch-btn"
+                        : "bg-white border border-slate-200 hover:border-primary/40"
                       }`}
                   >
                     {c.nickname}
@@ -90,26 +101,34 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
           )}
 
           {/* 아이 정보 */}
-          <div className="bg-warm-beige rounded-card p-4 mb-4">
-            <h4 className="text-sm font-semibold mb-2">👶 현재 아이 정보</h4>
+          <div className="bg-surface rounded-xl p-4 mb-4">
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-1.5">
+              <MaterialIcon name="person" size={16} className="text-primary" />
+              현재 아이 정보
+            </h4>
             <p className="text-sm">이름: {child?.nickname}</p>
             <p className="text-sm">나이: 만 {child?.age}세</p>
             <p className="text-sm">성별: {child?.gender === "female" ? "여아" : child?.gender === "male" ? "남아" : "안 밝힘"}</p>
           </div>
 
           {/* 리마인더 설정 */}
-          <div className="bg-warm-beige rounded-card p-4 mb-4">
-            <h4 className="text-sm font-semibold mb-3">🔔 알림 리마인더</h4>
-            
+          <div className="bg-surface rounded-xl p-4 mb-4">
+            <h4 className="text-sm font-semibold mb-3 flex items-center gap-1.5">
+              <MaterialIcon name="notifications" size={16} className="text-primary" />
+              알림 리마인더
+            </h4>
+
             {notifPermission === "denied" && (
-              <p className="text-xs text-red-500 mb-3">
-                ⚠️ 알림이 차단되었습니다. 브라우저 설정에서 허용해주세요.
+              <p className="text-xs text-red-500 mb-3 flex items-center gap-1">
+                <MaterialIcon name="warning" size={12} className="text-red-500" />
+                알림이 차단되었습니다. 브라우저 설정에서 허용해주세요.
               </p>
             )}
-            
+
             {notifPermission === "unsupported" && (
-              <p className="text-xs text-mid-gray mb-3">
-                ℹ️ 이 브라우저는 알림을 지원하지 않습니다.
+              <p className="text-xs text-slate-500 mb-3 flex items-center gap-1">
+                <MaterialIcon name="info" size={12} className="text-slate-400" />
+                이 브라우저는 알림을 지원하지 않습니다.
               </p>
             )}
 
@@ -125,7 +144,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                       value={reminder.time}
                       onChange={(e) => handleTimeChange(reminder.id, e.target.value)}
                       disabled={!reminder.enabled}
-                      className="mt-1 px-2 py-1 text-sm border border-light-gray rounded
+                      className="mt-1 px-2 py-1 text-sm border border-slate-200 rounded
                                disabled:opacity-50 disabled:bg-gray-100"
                     />
                   </div>
@@ -141,7 +160,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
                                     after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                     after:bg-white after:border-gray-300 after:border after:rounded-full
                                     after:h-5 after:w-5 after:transition-all
-                                    peer-checked:bg-soft-green"></div>
+                                    peer-checked:bg-primary"></div>
                   </label>
                 </div>
               ))}
@@ -149,14 +168,17 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
           </div>
 
           {/* 데이터 내보내기 */}
-          <div className="bg-warm-beige rounded-card p-4 mb-4">
-            <h4 className="text-sm font-semibold mb-3">💾 데이터 내보내기</h4>
+          <div className="bg-surface rounded-xl p-4 mb-4">
+            <h4 className="text-sm font-semibold mb-3 flex items-center gap-1.5">
+              <MaterialIcon name="download" size={16} className="text-primary" />
+              데이터 내보내기
+            </h4>
             <div className="flex gap-2">
               <button
                 onClick={() => exportActivitiesCSV(activities)}
                 className="flex-1 py-2.5 rounded-button font-medium text-sm
-                           bg-white border border-light-gray
-                           hover:border-soft-green/40 hover:shadow-card
+                           bg-white border border-slate-200
+                           hover:border-primary/40 hover:shadow-stitch-card
                            transition-all"
               >
                 📊 CSV 내보내기
@@ -164,24 +186,27 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
               <button
                 onClick={() => exportAllDataJSON(child, activities)}
                 className="flex-1 py-2.5 rounded-button font-medium text-sm
-                           bg-white border border-light-gray
-                           hover:border-soft-green/40 hover:shadow-card
+                           bg-white border border-slate-200
+                           hover:border-primary/40 hover:shadow-stitch-card
                            transition-all"
               >
                 📁 JSON 백업
               </button>
             </div>
-            <p className="text-xs text-mid-gray mt-2">
+            <p className="text-xs text-slate-500 mt-2">
               기록 {activities.length}개를 내보낼 수 있어요.
             </p>
           </div>
 
           {/* 앱 정보 */}
-          <div className="bg-warm-beige rounded-card p-4 mb-4">
-            <h4 className="text-sm font-semibold mb-2">📱 앱 정보</h4>
+          <div className="bg-surface rounded-xl p-4 mb-4">
+            <h4 className="text-sm font-semibold mb-2 flex items-center gap-1.5">
+              <MaterialIcon name="phone_iphone" size={16} className="text-primary" />
+              앱 정보
+            </h4>
             <p className="text-sm">버전: MVP 0.2.0</p>
             <p className="text-sm">데이터: localStorage (로컬 저장)</p>
-            <p className="text-xs text-mid-gray mt-2">
+            <p className="text-xs text-slate-500 mt-2">
               이 앱은 PWA로 홈 화면에 설치할 수 있습니다.
             </p>
           </div>
@@ -191,9 +216,10 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
             onClick={handleReset}
             className="w-full py-3 rounded-button font-semibold text-sm
                        bg-soft-coral/10 text-soft-coral border border-soft-coral/30
-                       hover:bg-soft-coral/20 transition-all"
+                       hover:bg-soft-coral/20 transition-all flex items-center justify-center gap-2"
           >
-            🗑️ 모든 데이터 초기화 (처음부터 다시)
+            <MaterialIcon name="delete" size={16} />
+            모든 데이터 초기화 (처음부터 다시)
           </button>
         </div>
       </div>

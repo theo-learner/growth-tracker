@@ -2,28 +2,52 @@
 
 import { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
-import { RecommendedActivity, RecommendedProduct, ActivityRecord } from "@/types";
+import { RecommendedActivity, RecommendedProduct, ActivityRecord, DomainKey } from "@/types";
 import { callApi } from "@/lib/api-client";
+import MaterialIcon from "@/components/ui/MaterialIcon";
+
+// 영역별 컬러 배너 (imageUrl 없을 때 폴백)
+const DOMAIN_BANNER_COLORS: Record<string, string> = {
+  verbalComprehension: "from-blue-100 to-blue-50",
+  visualSpatial:       "from-purple-100 to-purple-50",
+  fluidReasoning:      "from-teal-100 to-teal-50",
+  workingMemory:       "from-orange-100 to-orange-50",
+  processingSpeed:     "from-pink-100 to-pink-50",
+};
+
+const DOMAIN_BADGE_CLASSES: Record<string, string> = {
+  verbalComprehension: "bg-blue-100 text-blue-700",
+  visualSpatial:       "bg-purple-100 text-purple-700",
+  fluidReasoning:      "bg-teal-100 text-teal-700",
+  workingMemory:       "bg-orange-100 text-orange-700",
+  processingSpeed:     "bg-pink-100 text-pink-700",
+};
+
+const DOMAIN_LABELS_KO: Record<string, string> = {
+  verbalComprehension: "언어이해",
+  visualSpatial:       "시공간",
+  fluidReasoning:      "유동추론",
+  workingMemory:       "작업기억",
+  processingSpeed:     "처리속도",
+};
 
 /**
- * AI 맞춤 추천 탭 — API 연동 + 새로고침 기능
+ * AI 맞춤 추천 탭 — Stitch 디자인 (성장 대시보드 / 맞춤 추천 활동 및 교구)
  */
 export default function RecommendTab() {
   const { child, weeklyReport, recommendations: storeRecs, products: storeProds, addActivity } = useStore();
   const childName = child?.nickname || "아이";
-  
+
   const [recommendations, setRecommendations] = useState<RecommendedActivity[]>(storeRecs);
   const [products, setProducts] = useState<RecommendedProduct[]>(storeProds);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
-  // 스토어 데이터로 초기화
   useEffect(() => {
     setRecommendations(storeRecs);
     setProducts(storeProds);
   }, [storeRecs, storeProds]);
 
-  // 추천 새로고침
   const refreshRecommendations = async () => {
     setLoading(true);
     try {
@@ -45,61 +69,58 @@ export default function RecommendTab() {
   };
 
   return (
-    <div className="px-5">
-      {/* 헤더 */}
-      <div className="py-4 flex items-start justify-between">
-        <div>
-          <h2 className="text-xl font-bold">💡 {childName}를 위한 맞춤 추천</h2>
-          <p className="text-sm text-mid-gray mt-1">
-            AI가 이번 주 기록을 분석했어요
-            {lastUpdated && <span className="text-xs"> · {lastUpdated} 업데이트</span>}
-          </p>
+    <div className="pb-6">
+      {/* 헤더 — sticky + backdrop-blur */}
+      <div className="sticky top-0 z-10 bg-surface-100/80 backdrop-blur-md px-4 pt-5 pb-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-dark-gray">{childName}를 위한 맞춤 추천</h2>
+            <div className="flex items-center gap-1.5 mt-0.5">
+              <MaterialIcon name="auto_awesome" size={14} className="text-primary" />
+              <p className="text-xs text-mid-gray">
+                AI가 최근 기록을 분석했어요
+                {lastUpdated && <span> · {lastUpdated} 업데이트</span>}
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={refreshRecommendations}
+            disabled={loading}
+            aria-label="추천 새로고침"
+            className="flex h-10 w-10 items-center justify-center rounded-full
+                       bg-white shadow-stitch-card border border-surface-300/60
+                       disabled:opacity-50 transition-all active:scale-95"
+          >
+            <MaterialIcon
+              name="refresh"
+              size={20}
+              className={`text-mid-gray ${loading ? "animate-spin" : ""}`}
+            />
+          </button>
         </div>
-        <button
-          onClick={refreshRecommendations}
-          disabled={loading}
-          className={`px-3 py-1.5 rounded-full text-xs font-semibold
-                     ${loading 
-                       ? "bg-gray-100 text-gray-400" 
-                       : "bg-soft-green-50 text-soft-green-600 hover:bg-soft-green-100"
-                     } transition-all`}
-        >
-          {loading ? "⏳ 분석 중..." : "🔄 새로고침"}
-        </button>
       </div>
 
-      {/* 추천 활동 */}
-      <div className="mb-6">
-        <h3 className="text-base font-semibold mb-3">🎯 이번 주 추천 활동</h3>
-        {recommendations.length === 0 ? (
-          <div className="card text-center py-6">
-            <p className="text-3xl mb-2">🤔</p>
-            <p className="text-sm text-mid-gray">기록을 더 남기면 맞춤 추천을 드릴 수 있어요!</p>
+      <div className="px-4 space-y-8 mt-4">
+        {/* 추천 활동 섹션 */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-dark-gray">추천 활동</h3>
+            <span className="text-primary-600 text-sm font-semibold">전체 보기</span>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {recommendations.map((rec, i) => (
-              <div key={i} className="card">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-card bg-soft-green-50
-                                  flex items-center justify-center shrink-0">
-                    <span className="text-xl">{rec.icon}</span>
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-bold text-dark-gray text-sm">
-                      {rec.title}
-                    </h4>
-                    <p className="text-sm text-dark-gray/80 mt-1 leading-relaxed">
-                      &ldquo;{rec.description}&rdquo;
-                    </p>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-mid-gray">
-                      <span className="flex items-center gap-1">📌 {rec.reason}</span>
-                      <span className="flex items-center gap-1">⏰ {rec.duration}</span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={() => {
+
+          {recommendations.length === 0 ? (
+            <div className="bg-white rounded-xl border border-surface-300/60 shadow-stitch-card
+                            p-8 text-center">
+              <MaterialIcon name="psychology" size={40} className="text-surface-400 mx-auto mb-2" />
+              <p className="text-sm text-mid-gray">기록을 더 남기면 맞춤 활동을 추천해 드려요!</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {recommendations.map((rec, i) => (
+                <ActivityCard
+                  key={i}
+                  rec={rec}
+                  onStart={() => {
                     const record: ActivityRecord = {
                       id: `act-${Date.now()}`,
                       type: "activity",
@@ -111,79 +132,171 @@ export default function RecommendTab() {
                       },
                     };
                     addActivity(record);
-                    alert(`"${rec.title}" 활동이 기록에 추가되었어요! 🎉`);
+                    alert(`"${rec.title}" 활동이 기록에 추가되었어요!`);
                   }}
-                  className="w-full mt-4 py-2.5 bg-soft-green-50 text-soft-green-600
-                                 rounded-button text-sm font-bold
-                                 border border-soft-green-100/50
-                                 hover:bg-soft-green-100 hover:text-soft-green-700
-                                 active:scale-[0.98]
-                                 transition-all duration-200">
-                  ▶️ 활동 시작하기
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+                />
+              ))}
+            </div>
+          )}
+        </section>
 
-      {/* 추천 교구 */}
-      <div className="mb-6">
-        <h3 className="text-base font-semibold mb-3">🛒 추천 교구</h3>
-        {products.length === 0 ? (
-          <div className="card text-center py-6">
-            <p className="text-3xl mb-2">🛍️</p>
-            <p className="text-sm text-mid-gray">아이 발달에 맞는 교구를 추천해 드릴게요!</p>
+        {/* 추천 교구 섹션 */}
+        <section>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-base font-bold text-dark-gray">추천 교구</h3>
+            <span className="text-primary-600 text-sm font-semibold">전체 상품 보기</span>
           </div>
-        ) : (
-          <div className="space-y-3">
-            {products.map((prod, i) => (
-              <div key={i} className="card">
-                <div className="flex items-start gap-3">
-                  <div className="w-16 h-16 bg-warm-beige-100 rounded-card
-                                  flex items-center justify-center text-3xl shrink-0
-                                  border border-warm-beige-300/30">
-                    {prod.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-dark-gray text-sm">
-                      {prod.name}
-                    </h4>
-                    <p className="text-base font-bold text-soft-green-600 mt-1">
-                      {prod.price}
-                    </p>
-                    <p className="text-xs text-mid-gray mt-1 leading-relaxed">
-                      💬 &ldquo;{prod.reason}&rdquo;
-                    </p>
-                  </div>
-                </div>
-                <a
-                  href={prod.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full mt-4 py-2.5 rounded-button text-sm font-bold text-center
-                             border border-sunny-yellow-light
-                             text-sunny-yellow-dark
-                             hover:shadow-card active:scale-[0.98]
-                             transition-all duration-200"
-                  style={{ background: "linear-gradient(135deg, #FFFDF5 0%, #FFF8E0 100%)" }}
-                >
-                  🛒 쿠팡에서 보기 →
-                </a>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {/* 안내 배너 (공정위 문구 준수) */}
-      <div className="info-banner mb-4 bg-gray-50 border border-gray-200">
-        <div className="flex items-start gap-2">
-          <span className="text-xs shrink-0 mt-0.5">📢</span>
-          <p className="text-[11px] text-mid-gray leading-relaxed">
-            추천 상품은 AI 분석 기반이며, 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
-          </p>
+          {products.length === 0 ? (
+            <div className="bg-white rounded-xl border border-surface-300/60 shadow-stitch-card
+                            p-8 text-center">
+              <MaterialIcon name="toys" size={40} className="text-surface-400 mx-auto mb-2" />
+              <p className="text-sm text-mid-gray">발달에 맞는 교구를 추천해 드릴게요!</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {products.map((prod, i) => (
+                <ProductCard key={i} prod={prod} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        {/* 공정위 문구 */}
+        <div className="bg-surface-200 rounded-xl border border-surface-300/60 px-4 py-3">
+          <div className="flex items-start gap-2">
+            <MaterialIcon name="info" size={14} className="text-mid-gray shrink-0 mt-0.5" />
+            <p className="text-[11px] text-mid-gray leading-relaxed">
+              추천 상품은 AI 분석 기반이며, 이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.
+            </p>
+          </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── 활동 카드 ────────────────────────────────────────────────────────────────
+
+interface ActivityCardProps {
+  rec: RecommendedActivity;
+  onStart: () => void;
+}
+
+function ActivityCard({ rec, onStart }: ActivityCardProps) {
+  const primaryDomain = rec.domains?.[0] as DomainKey | undefined;
+  const bannerGradient = primaryDomain
+    ? (DOMAIN_BANNER_COLORS[primaryDomain] ?? "from-primary-100 to-primary-50")
+    : "from-primary-100 to-primary-50";
+
+  return (
+    <div className="bg-white rounded-xl overflow-hidden shadow-stitch-card border border-surface-300/60
+                    transition-shadow hover:shadow-stitch-card-hover">
+      {/* 이미지 / 컬러 배너 */}
+      <div className="aspect-video w-full overflow-hidden">
+        {rec.imageUrl ? (
+          <img
+            src={rec.imageUrl}
+            alt={rec.title}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className={`w-full h-full bg-gradient-to-r ${bannerGradient}
+                           flex items-center justify-center`}>
+            <span className="text-5xl opacity-50">{rec.icon}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="p-4">
+        <h4 className="text-base font-bold text-dark-gray">{rec.title}</h4>
+        <p className="text-sm text-mid-gray mt-1 leading-relaxed">{rec.description}</p>
+
+        {/* 추천 이유 */}
+        {rec.reason && (
+          <div className="flex items-start gap-1.5 mt-2">
+            <MaterialIcon name="push_pin" size={12} className="text-mid-gray mt-0.5 shrink-0" />
+            <p className="text-xs text-mid-gray">{rec.reason}</p>
+          </div>
+        )}
+
+        {/* 태그 — 영역 + 소요시간 */}
+        <div className="mt-3 flex flex-wrap gap-2">
+          {rec.domains?.map((d) => (
+            <span
+              key={d}
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-badge
+                          text-[11px] font-bold uppercase tracking-wide
+                          ${DOMAIN_BADGE_CLASSES[d] ?? "bg-primary-100 text-primary-700"}`}
+            >
+              <MaterialIcon name="psychology" size={13} />
+              {DOMAIN_LABELS_KO[d] ?? d}
+            </span>
+          ))}
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-badge
+                           bg-surface-200 text-mid-gray text-[11px] font-bold uppercase tracking-wide">
+            <MaterialIcon name="schedule" size={13} />
+            {rec.duration}
+          </span>
+        </div>
+
+        <button
+          onClick={onStart}
+          className="btn-primary mt-4 flex items-center justify-center gap-2"
+        >
+          <MaterialIcon name="play_circle" size={18} filled />
+          활동 시작하기
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── 교구 카드 ────────────────────────────────────────────────────────────────
+
+interface ProductCardProps {
+  prod: RecommendedProduct;
+}
+
+function ProductCard({ prod }: ProductCardProps) {
+  return (
+    <div className="flex gap-4 bg-white p-3 rounded-xl shadow-stitch-card border border-surface-300/60">
+      {/* 썸네일 */}
+      <div className="h-24 w-24 shrink-0 rounded-lg bg-surface-200 overflow-hidden
+                      flex items-center justify-center">
+        {prod.imageUrl ? (
+          <img
+            src={prod.imageUrl}
+            alt={prod.name}
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <span className="text-4xl">{prod.icon}</span>
+        )}
+      </div>
+
+      {/* 정보 */}
+      <div className="flex flex-col justify-between py-1 flex-1 min-w-0">
+        <div>
+          <h4 className="text-sm font-bold text-dark-gray line-clamp-1">{prod.name}</h4>
+          <p className="text-[11px] text-mid-gray mt-0.5 italic line-clamp-2">
+            &ldquo;{prod.review ?? prod.reason}&rdquo;
+          </p>
+          <p className="text-primary-600 font-bold mt-1 text-sm">{prod.price}</p>
+        </div>
+        <a
+          href={prod.link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="self-end flex items-center gap-1
+                     text-[12px] font-bold text-dark-gray
+                     border border-surface-300 px-3 py-1 rounded-lg
+                     hover:bg-surface-200 active:scale-[0.97]
+                     transition-all duration-150"
+        >
+          쿠팡에서 보기
+          <MaterialIcon name="open_in_new" size={14} />
+        </a>
       </div>
     </div>
   );

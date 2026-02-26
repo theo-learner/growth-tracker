@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
 import { callApi } from "@/lib/api-client";
+import MaterialIcon from "@/components/ui/MaterialIcon";
 
 interface Insight {
   type: string;
@@ -16,7 +17,6 @@ interface AnalysisResult {
   todayTip: string;
 }
 
-// 프리셋 fallback
 const FALLBACK_ANALYSIS: AnalysisResult = {
   insights: [
     { type: "progress", icon: "📈", message: "오늘 기록을 분석하고 있어요...", domain: "" },
@@ -25,7 +25,7 @@ const FALLBACK_ANALYSIS: AnalysisResult = {
 };
 
 /**
- * 일간 인사이트 카드 — AI 분석 API 연동
+ * AI Daily Note 카드 — Stitch accent-yellow 디자인
  */
 export default function DailyInsight() {
   const activities = useStore((s) => s.activities);
@@ -34,14 +34,10 @@ export default function DailyInsight() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // 오늘 활동만 필터링
   const todayStr = new Date().toISOString().split("T")[0];
   const todayActivities = activities.filter((a) => a.timestamp.startsWith(todayStr));
-  
-  // 샘플 데이터 여부 확인
   const hasOnlySampleData = todayActivities.length > 0 && todayActivities.every((a) => a.isSample);
 
-  // 활동이 있을 때 분석 API 호출
   useEffect(() => {
     if (todayActivities.length === 0) {
       setAnalysis(null);
@@ -72,21 +68,21 @@ export default function DailyInsight() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [todayActivities.length]);
 
-  // 기록이 없으면 안내 메시지
+  // 기록 없을 때 — 안내 메시지
   if (todayActivities.length === 0) {
     return (
-      <div className="card-insight">
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-7 h-7 rounded-full bg-soft-green/15 flex items-center justify-center">
-            <span className="text-sm">✨</span>
-          </div>
-          <h3 className="text-sm font-bold text-soft-green-600">AI 인사이트</h3>
+      <div className="bg-accent-yellow border border-accent-yellow-border/60 rounded-xl p-4 flex gap-3">
+        <div className="bg-yellow-300/20 p-2 rounded-xl h-fit">
+          <MaterialIcon name="auto_awesome" size={20} className="text-accent-yellow-text" />
         </div>
-        <div className="text-center py-4">
-          <p className="text-3xl mb-2">📝</p>
-          <p className="text-sm text-mid-gray">
-            오늘 첫 기록을 남기면<br />AI가 인사이트를 알려드려요!
-          </p>
+        <div className="flex-1">
+          <h4 className="text-sm font-bold text-accent-yellow-text mb-1">AI Daily Note</h4>
+          <div className="flex items-center gap-2">
+            <MaterialIcon name="edit_note" size={16} className="text-accent-yellow-text/60" />
+            <p className="text-sm text-accent-yellow-text/80">
+              첫 기록을 남기면 AI가 인사이트를 알려드려요!
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -95,54 +91,47 @@ export default function DailyInsight() {
   const displayAnalysis = analysis || FALLBACK_ANALYSIS;
 
   return (
-    <div className="card-insight">
-      {/* 헤더 — 뱃지 스타일 */}
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-7 h-7 rounded-full bg-soft-green/15 flex items-center justify-center">
-          <span className="text-sm">✨</span>
+    <div className="bg-accent-yellow border border-accent-yellow-border/60 rounded-xl p-4 flex gap-3">
+      <div className="bg-yellow-300/20 p-2 rounded-xl h-fit shrink-0">
+        <MaterialIcon name="auto_awesome" size={20} className="text-accent-yellow-text" />
+      </div>
+      <div className="flex-1 min-w-0">
+        {/* 헤더 */}
+        <div className="flex items-center gap-2 mb-2">
+          <h4 className="text-sm font-bold text-accent-yellow-text">AI Daily Note</h4>
+          {loading && (
+            <span className="text-[10px] text-accent-yellow-text/60 animate-pulse">분석 중...</span>
+          )}
+          {hasOnlySampleData && (
+            <span className="px-1.5 py-0.5 text-[10px] font-medium bg-amber-200/60 text-amber-700 rounded-full">
+              샘플 기반
+            </span>
+          )}
         </div>
-        <h3 className="text-sm font-bold text-soft-green-600">AI 인사이트</h3>
-        {loading && (
-          <span className="text-xs text-mid-gray animate-pulse">분석 중...</span>
-        )}
-        {hasOnlySampleData && (
-          <span className="px-2 py-0.5 text-[10px] font-medium bg-amber-100 text-amber-600 rounded-full">
-            샘플 데이터 기반
-          </span>
-        )}
-      </div>
 
-      {/* 인사이트 목록 */}
-      <div className="space-y-3">
-        {displayAnalysis.insights.map((insight, i) => (
-          <div
-            key={i}
-            className="flex items-start gap-3 p-2.5 rounded-button
-                       bg-white/60 border border-soft-green-100/30"
-          >
-            <span className="text-lg shrink-0 mt-0.5">{insight.icon}</span>
-            <p className="text-sm text-dark-gray leading-relaxed">{insight.message}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* 구분선 — 따뜻한 그라데이션 */}
-      <div className="divider-warm my-4" />
-
-      {/* 오늘의 팁 — 하이라이트 카드 */}
-      <div className="card-highlight">
-        <div className="flex items-start gap-2">
-          <span className="text-lg shrink-0">💡</span>
-          <div>
-            <p className="text-xs font-bold text-sunny-yellow-dark mb-1">오늘의 팁</p>
-            <p className="text-sm text-dark-gray leading-relaxed">{displayAnalysis.todayTip}</p>
-          </div>
+        {/* 인사이트 목록 */}
+        <div className="space-y-1.5">
+          {displayAnalysis.insights.map((insight, i) => (
+            <p key={i} className="text-sm text-accent-yellow-text/80 leading-relaxed">
+              {insight.message}
+            </p>
+          ))}
         </div>
-      </div>
 
-      {error && (
-        <p className="text-xs text-red-400 mt-2 text-center">{error}</p>
-      )}
+        {/* 오늘의 팁 */}
+        {displayAnalysis.todayTip && (
+          <div className="mt-3 flex items-start gap-1.5">
+            <MaterialIcon name="lightbulb" size={14} className="text-accent-yellow-text shrink-0 mt-0.5" filled />
+            <p className="text-xs font-medium text-accent-yellow-text/70 leading-relaxed">
+              {displayAnalysis.todayTip}
+            </p>
+          </div>
+        )}
+
+        {error && (
+          <p className="text-[10px] text-red-500 mt-1">{error}</p>
+        )}
+      </div>
     </div>
   );
 }

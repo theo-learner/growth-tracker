@@ -38,8 +38,8 @@ export default function Step1ChildInfo() {
         <div className="relative inline-block">
           {/* 배경 원 — 소프트 그린 그라데이션 */}
           <div className="w-24 h-24 mx-auto rounded-full flex items-center justify-center
-                          bg-gradient-to-br from-soft-green-50 to-soft-green-100
-                          border-2 border-soft-green-200/50 shadow-btn-green/20">
+                          bg-gradient-to-br from-primary-50 to-primary-100
+                          border-2 border-primary-200/50">
             <span className="text-5xl">🧒</span>
           </div>
           {/* 장식 잎사귀 */}
@@ -71,7 +71,7 @@ export default function Step1ChildInfo() {
           required
         />
         {nickname.trim() && (
-          <p className="text-xs text-soft-green mt-1.5 animate-fade-in">
+          <p className="text-xs text-primary mt-1.5 animate-fade-in">
             ✓ {nickname.trim()}(이)의 성장 이야기가 시작돼요!
           </p>
         )}
@@ -106,8 +106,8 @@ export default function Step1ChildInfo() {
                 flex-1 py-3 rounded-card font-semibold text-base
                 transition-all duration-200
                 ${age === a
-                  ? "bg-gradient-green text-white shadow-btn-green scale-[1.02]"
-                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green/50 hover:shadow-card"
+                  ? "bg-primary text-white shadow-stitch-btn scale-[1.02]"
+                  : "bg-white text-dark-gray border border-light-gray hover:border-primary/40 hover:shadow-stitch-card"
                 }
               `}
             >
@@ -136,8 +136,8 @@ export default function Step1ChildInfo() {
                 transition-all duration-200
                 flex flex-col items-center gap-1.5
                 ${gender === g.value
-                  ? "bg-gradient-green text-white shadow-btn-green scale-[1.02]"
-                  : "bg-white text-dark-gray border border-light-gray hover:border-soft-green/50 hover:shadow-card"
+                  ? "bg-primary text-white shadow-stitch-btn scale-[1.02]"
+                  : "bg-white text-dark-gray border border-light-gray hover:border-primary/40 hover:shadow-stitch-card"
                 }
               `}
             >

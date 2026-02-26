@@ -71,13 +71,13 @@ export default function TrendChart({ data, domain }: TrendChartProps) {
           connectNulls={false}
         />
 
-        {/* 실제 데이터 영역 (연한 초록색) */}
+        {/* 실제 데이터 영역 (sky blue 연한) */}
         <Area
           type="monotone"
           dataKey="actual"
           stroke="none"
-          fill="#6BBF8A"
-          fillOpacity={0.1}
+          fill="#2bbdee"
+          fillOpacity={0.08}
           connectNulls={false}
         />
 
@@ -85,9 +85,9 @@ export default function TrendChart({ data, domain }: TrendChartProps) {
         <Line
           type="monotone"
           dataKey="actual"
-          stroke="#6BBF8A"
+          stroke="#2bbdee"
           strokeWidth={2}
-          dot={{ fill: "#6BBF8A", r: 4 }}
+          dot={{ fill: "#2bbdee", r: 4 }}
           connectNulls={false}
         />
 
@@ -95,10 +95,10 @@ export default function TrendChart({ data, domain }: TrendChartProps) {
         <Line
           type="monotone"
           dataKey="predicted"
-          stroke="#6BBF8A"
+          stroke="#2bbdee"
           strokeWidth={2}
           strokeDasharray="6 4"
-          dot={{ fill: "white", stroke: "#6BBF8A", strokeWidth: 2, r: 4 }}
+          dot={{ fill: "white", stroke: "#2bbdee", strokeWidth: 2, r: 4 }}
           connectNulls={false}
         />
       </AreaChart>

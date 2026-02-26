@@ -12,16 +12,23 @@
 
 /* ─── CSS 변수 ─── */
 :root {
-  --background: #F5F0E8;
-  --foreground: #2C2C2C;
+  --background: #f6f7f8;
+  --foreground: #1a1a2e;
+
+  /* Primary (Sky Blue) */
+  --primary: #2bbdee;
+  --primary-dark: #0b96c9;
+  --primary-darker: #0a78a3;
 
   /* 그라데이션 프리셋 */
   --gradient-warm-bg: linear-gradient(180deg, #FAF7F2 0%, #F5F0E8 50%, #FAF7F2 100%);
   --gradient-green: linear-gradient(135deg, #5CB87A 0%, #4CAF6E 100%);
   --gradient-green-soft: linear-gradient(135deg, #DCFCE7 0%, #F0FDF4 100%);
-  --gradient-card: linear-gradient(180deg, #FFFFFF 0%, #FDFCF9 100%);
-  --gradient-insight: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 40%, #F0FDF4 100%);
-  --gradient-warm-highlight: linear-gradient(135deg, #FFFDF5 0%, #FFF8E0 100%);
+  --gradient-card: linear-gradient(180deg, #FFFFFF 0%, #FDFDFD 100%);
+  --gradient-insight: linear-gradient(135deg, #e0f4fe 0%, #f0faff 40%, #e0f4fe 100%);
+  --gradient-warm-highlight: linear-gradient(135deg, #fef9c3 0%, #fef3c7 100%);
+  --gradient-primary: linear-gradient(135deg, #2bbdee 0%, #0b96c9 100%);
+  --gradient-primary-soft: linear-gradient(135deg, #e0f4fe 0%, #f0faff 100%);
 
   /* 6개 발달 영역 색상 변수 (차트/JS에서 참조용) */
   --color-verbalComprehension: #5B9BD5;
@@ -38,9 +45,8 @@ html {
 }
 
 body {
-  font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  background: var(--gradient-warm-bg);
-  background-attachment: fixed;
+  font-family: "Pretendard Variable", Pretendard, Lexend, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  background: var(--background);
   color: var(--foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -78,34 +84,34 @@ input, textarea, button, select {
      카드 시스템 — 따뜻한 그라데이션 + 입체 그림자
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-  /* 기본 카드 — 미세 그라데이션 + 멀티레이어 그림자 */
+  /* 기본 카드 — 흰색 배경 + 미니멀 보더/그림자 (Stitch 톤) */
   .card {
-    @apply relative rounded-cardLg p-5
-           border border-white/70
-           shadow-card
+    @apply relative rounded-xl p-5
+           bg-white
+           border border-slate-100
+           shadow-stitch-card
            transition-all duration-300;
-    background: var(--gradient-card);
   }
   .card:hover {
-    @apply shadow-card-hover -translate-y-0.5;
+    @apply shadow-stitch-card-hover -translate-y-0.5;
   }
   .card:active {
     @apply shadow-card-active translate-y-0;
   }
 
-  /* 인사이트 카드 — 그린 틴트 + 그린 그림자 */
+  /* 인사이트 카드 — Sky Blue soft gradient (Stitch AI Daily Note 패턴) */
   .card-insight {
-    @apply relative rounded-cardLg p-5
-           border border-soft-green-100/50
-           shadow-card-green
+    @apply relative rounded-xl p-5
+           border border-primary-100/60
+           shadow-stitch-card
            transition-all duration-300;
-    background: var(--gradient-insight);
+    background: var(--gradient-primary-soft);
   }
 
-  /* 하이라이트 카드 — 옐로우/골드 틴트 */
+  /* 하이라이트 카드 — 노란색 틴트 (Stitch accent-yellow 패턴) */
   .card-highlight {
-    @apply rounded-card px-4 py-3.5
-           border border-sunny-yellow-light/60;
+    @apply rounded-xl px-4 py-3.5
+           border border-accent-yellow-border/60;
     background: var(--gradient-warm-highlight);
   }
 
@@ -125,26 +131,25 @@ input, textarea, button, select {
      버튼 시스템
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
-  /* Primary 버튼 — 그린 그라데이션 + 글로우 */
+  /* Primary 버튼 — Sky Blue 그라데이션 + 글로우 (Stitch 기조) */
   .btn-primary {
     @apply relative w-full h-12 rounded-button
            font-semibold text-base text-white
-           shadow-btn-green
+           shadow-stitch-btn
            active:scale-[0.97] active:shadow-card-active
            transition-all duration-200
            overflow-hidden;
-    background: var(--gradient-green);
+    background: var(--gradient-primary);
   }
   .btn-primary:hover {
-    @apply shadow-btn-green-hover;
-    filter: brightness(1.04);
+    filter: brightness(1.05);
   }
   .btn-primary:disabled {
     @apply opacity-40 cursor-not-allowed shadow-none;
     filter: grayscale(0.3);
   }
   .btn-primary:focus-visible {
-    @apply outline-none ring-2 ring-soft-green ring-offset-2;
+    @apply outline-none ring-2 ring-primary ring-offset-2;
   }
   /* 글래스 하이라이트 오버레이 */
   .btn-primary::after {
@@ -157,23 +162,23 @@ input, textarea, button, select {
   .btn-secondary {
     @apply w-full h-12 rounded-button
            font-semibold text-base
-           bg-white text-mid-gray
-           border border-light-gray
-           shadow-card-active
-           hover:border-soft-green/40 hover:text-soft-green-600
-           hover:shadow-card
+           bg-white text-slate-600
+           border border-slate-200
+           shadow-stitch-card
+           hover:border-primary/40 hover:text-primary-700
+           hover:shadow-stitch-card-hover
            active:scale-[0.97]
            transition-all duration-200;
   }
   .btn-secondary:focus-visible {
-    @apply outline-none ring-2 ring-soft-green ring-offset-2;
+    @apply outline-none ring-2 ring-primary ring-offset-2;
   }
 
   /* Ghost 버튼 */
   .btn-ghost {
     @apply px-4 py-2 rounded-button
-           font-medium text-sm text-calm-blue
-           hover:bg-calm-blue-light/30
+           font-medium text-sm text-primary-700
+           hover:bg-primary-50
            active:scale-[0.97]
            transition-all duration-200;
   }
@@ -183,22 +188,22 @@ input, textarea, button, select {
      선택 칩 — 단일/다중 선택
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   .chip {
-    @apply py-3 px-4 rounded-card
+    @apply py-3 px-4 rounded-xl
            text-center font-medium text-sm
-           bg-white text-dark-gray
-           border border-light-gray
-           shadow-card-active
-           hover:border-soft-green/40 hover:shadow-card
+           bg-white text-slate-700
+           border border-slate-200
+           shadow-stitch-card
+           hover:border-primary/40 hover:shadow-stitch-card-hover
            active:scale-[0.96]
            transition-all duration-200;
   }
   .chip:focus-visible {
-    @apply outline-none ring-2 ring-soft-green ring-offset-2;
+    @apply outline-none ring-2 ring-primary ring-offset-2;
   }
   .chip-selected {
     @apply text-white border-transparent
-           shadow-btn-green;
-    background: var(--gradient-green);
+           shadow-stitch-btn;
+    background: var(--gradient-primary);
   }
 
 
@@ -207,11 +212,11 @@ input, textarea, button, select {
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
   .input-field {
     @apply w-full h-12 px-4 rounded-button
-           border border-light-gray bg-white
-           text-base text-dark-gray
-           placeholder:text-mid-gray/40
-           focus:outline-none focus:border-soft-green
-           focus:shadow-input-focus
+           border border-slate-200 bg-white
+           text-base text-slate-800
+           placeholder:text-slate-400
+           focus:outline-none focus:border-primary
+           focus:ring-2 focus:ring-primary/20
            transition-all duration-200;
   }
 
@@ -226,8 +231,8 @@ input, textarea, button, select {
            shadow-badge;
   }
   .badge-green {
-    @apply bg-soft-green-50 text-soft-green-700
-           border border-soft-green-100;
+    @apply bg-primary-50 text-primary-700
+           border border-primary-100;
   }
   .badge-yellow {
     @apply text-sunny-yellow-dark border;
@@ -277,11 +282,11 @@ input, textarea, button, select {
   /* 온보딩 프로그레스 바 (상단 연결선) */
   .onboarding-progress-track {
     @apply h-1 rounded-full overflow-hidden;
-    background: linear-gradient(90deg, #E8E4DE 0%, #F0EDE6 100%);
+    background: linear-gradient(90deg, #e2e5e8 0%, #eef0f2 100%);
   }
   .onboarding-progress-fill {
     @apply h-full rounded-full;
-    background: var(--gradient-green);
+    background: var(--gradient-primary);
     transition: width 0.7s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -294,17 +299,19 @@ input, textarea, button, select {
   }
   /* 스텝 도트 — 활성 상태 */
   .step-dot-active {
-    @apply text-white shadow-step-active;
-    background: var(--gradient-green);
+    @apply text-white;
+    background: var(--gradient-primary);
     transform: scale(1.08);
+    box-shadow: 0 0 0 4px rgba(43,189,238,0.15), 0 2px 8px rgba(43,189,238,0.25);
   }
   /* 스텝 도트 — 완료 상태 */
   .step-dot-done {
-    @apply bg-soft-green text-white shadow-btn-green;
+    @apply text-white shadow-stitch-btn;
+    background: var(--gradient-primary);
   }
   /* 스텝 도트 — 대기 상태 */
   .step-dot-pending {
-    @apply bg-white text-mid-gray border-2 border-light-gray;
+    @apply bg-white text-slate-400 border-2 border-slate-200;
   }
   /* 스텝 라벨 */
   .step-label {
@@ -312,15 +319,13 @@ input, textarea, button, select {
            transition-all duration-300;
   }
   .step-label-active {
-    /* WCAG AA: active step label is small text (10px) on warm beige.
-       Use a darker green to meet contrast thresholds. */
-    @apply text-soft-green-900;
+    @apply text-primary-700;
   }
   .step-label-done {
-    @apply text-soft-green;
+    @apply text-primary-600;
   }
   .step-label-pending {
-    @apply text-dark-gray/60;
+    @apply text-slate-400;
   }
 
 
@@ -333,38 +338,34 @@ input, textarea, button, select {
            transition-all duration-200;
   }
   .tab-item-active {
-    @apply text-soft-green;
+    @apply text-primary;
   }
   .tab-item-inactive {
-    @apply text-mid-gray hover:text-soft-green/60;
+    @apply text-slate-400 hover:text-primary/60;
   }
 
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      기록 버튼 (홈 그리드) — 터치 피드백 강화
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  /* Quick Log 원형 버튼 (Stitch 패턴) */
   .record-btn {
-    @apply p-3 flex flex-col items-center justify-center gap-1.5
-           rounded-cardLg
-           border border-white/60
-           shadow-card
+    @apply flex flex-col items-center gap-2
            transition-all duration-200;
-    background: var(--gradient-card);
-    min-height: 76px;
+    min-width: 56px;
   }
-  .record-btn:hover {
-    @apply shadow-card-hover -translate-y-0.5;
+  .record-btn-circle {
+    @apply w-14 h-14 rounded-full
+           flex items-center justify-center
+           shadow-stitch-card
+           transition-all duration-200;
   }
-  .record-btn:active {
-    @apply shadow-card-active translate-y-0 scale-[0.94];
+  .record-btn:active .record-btn-circle {
+    transform: scale(0.92);
     transition-duration: 100ms;
   }
-  /* 아이콘 — 살짝 바운스 효과 */
-  .record-btn .record-btn-icon {
-    @apply transition-transform duration-200;
-  }
-  .record-btn:active .record-btn-icon {
-    transform: scale(0.9);
+  .record-btn-label {
+    @apply text-xs font-medium text-slate-600;
   }
 
 
@@ -417,7 +418,7 @@ input, textarea, button, select {
            transition-all duration-200;
   }
   .trend-up {
-    @apply bg-soft-green-50 text-soft-green-600;
+    @apply bg-primary-50 text-primary-600;
   }
   .trend-stable {
     @apply bg-calm-blue-light text-calm-blue-dark;
@@ -446,9 +447,9 @@ input, textarea, button, select {
     background: linear-gradient(135deg, #EDF5FC 0%, #F3F9FE 100%);
   }
   .info-banner-green {
-    @apply rounded-card px-4 py-3.5
-           border border-soft-green-100/40;
-    background: linear-gradient(135deg, #F0FDF4 0%, #F5FFF8 100%);
+    @apply rounded-xl px-4 py-3.5
+           border border-primary-100/40;
+    background: var(--gradient-primary-soft);
   }
 }
 
@@ -509,11 +510,11 @@ input, textarea, button, select {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D4E8D6;
+  background: #b9ecfe;
   border-radius: 100px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #BBF7D0;
+  background: #7cdffd;
 }
 
 /* 스크롤바 숨기기 유틸리티 */
@@ -528,8 +529,8 @@ input, textarea, button, select {
 
 /* ─── 선택 하이라이트 ─── */
 ::selection {
-  background-color: #DCFCE7;
-  color: #2D8A4A;
+  background-color: #b9ecfe;
+  color: #0a78a3;
 }
 
 
@@ -571,7 +572,7 @@ input, textarea, button, select {
 
 /* ─── 포커스 접근성 — 키보드 포커스만 표시 ─── */
 *:focus-visible {
-  outline: 2px solid #5CB87A;
+  outline: 2px solid #2bbdee;
   outline-offset: 2px;
   border-radius: 4px;
 }

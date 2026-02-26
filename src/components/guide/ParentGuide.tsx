@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import MaterialIcon from "@/components/ui/MaterialIcon";
 
 interface GuideItem {
   id: string;
@@ -91,10 +92,18 @@ export default function ParentGuide({ onClose }: { onClose: () => void }) {
 
         <div className="px-5 pb-2">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold">📚 부모 가이드</h3>
-            <button onClick={onClose} className="text-mid-gray text-xl">✕</button>
+            <div className="flex items-center gap-2">
+              <MaterialIcon name="menu_book" size={20} className="text-primary" />
+              <h3 className="text-lg font-bold">부모 가이드</h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
+            >
+              <MaterialIcon name="close" size={18} />
+            </button>
           </div>
-          <p className="text-sm text-mid-gray mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             아이 발달에 대해 알아보세요
           </p>
         </div>
@@ -104,7 +113,7 @@ export default function ParentGuide({ onClose }: { onClose: () => void }) {
             {GUIDE_ITEMS.map((item) => (
               <div
                 key={item.id}
-                className="bg-warm-beige rounded-card overflow-hidden"
+                className="bg-surface rounded-xl overflow-hidden"
               >
                 <button
                   onClick={() => toggleExpand(item.id)}
@@ -114,19 +123,19 @@ export default function ParentGuide({ onClose }: { onClose: () => void }) {
                     <span className="text-lg">{item.emoji}</span>
                     {item.title}
                   </span>
-                  <span className="text-mid-gray transition-transform duration-200"
+                  <span className="text-slate-400 transition-transform duration-200"
                         style={{ transform: expandedId === item.id ? "rotate(180deg)" : "rotate(0)" }}>
-                    ▼
+                    <MaterialIcon name="expand_more" size={18} />
                   </span>
                 </button>
-                
+
                 {expandedId === item.id && (
                   <div className="px-4 pb-4 pt-1 border-t border-white/50">
-                    <div className="space-y-1.5 text-sm text-dark-gray/90 leading-relaxed">
+                    <div className="space-y-1.5 text-sm text-slate-700 leading-relaxed">
                       {item.content.map((line, i) => (
                         <p key={i} dangerouslySetInnerHTML={{
                           __html: line
-                            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-soft-green-700">$1</strong>')
+                            .replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-primary-700">$1</strong>')
                         }} />
                       ))}
                     </div>
@@ -137,22 +146,25 @@ export default function ParentGuide({ onClose }: { onClose: () => void }) {
           </div>
 
           {/* 추가 자료 링크 */}
-          <div className="mt-6 p-4 bg-calm-blue-light/50 rounded-card">
-            <p className="text-sm font-semibold mb-2">📎 더 알아보기 (대한민국 공식 자료)</p>
+          <div className="mt-6 p-4 bg-primary-50 rounded-xl">
+            <p className="text-sm font-semibold mb-2 flex items-center gap-1.5">
+              <MaterialIcon name="link" size={14} className="text-primary" />
+              더 알아보기 (대한민국 공식 자료)
+            </p>
             <div className="space-y-2 text-sm">
-              <a href="https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5270" 
+              <a href="https://health.kdca.go.kr/healthinfo/biz/health/gnrlzHealthInfo/gnrlzHealthInfo/gnrlzHealthInfoView.do?cntnts_sn=5270"
                  target="_blank" rel="noopener noreferrer"
-                 className="block text-calm-blue hover:underline">
+                 className="block text-primary-600 hover:underline">
                 • 질병관리청 소아 성장/발달 가이드
               </a>
-              <a href="https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do" 
+              <a href="https://www.nhis.or.kr/nhis/healthin/wbhaca04500m01.do"
                  target="_blank" rel="noopener noreferrer"
-                 className="block text-calm-blue hover:underline">
+                 className="block text-primary-600 hover:underline">
                 • 국민건강보험공단 영유아 건강검진 안내
               </a>
-              <a href="http://central.childcare.go.kr/ccef/community/parentData/ParentDataSl.jsp" 
+              <a href="http://central.childcare.go.kr/ccef/community/parentData/ParentDataSl.jsp"
                  target="_blank" rel="noopener noreferrer"
-                 className="block text-calm-blue hover:underline">
+                 className="block text-primary-600 hover:underline">
                 • 중앙육아종합지원센터 육아 정보
               </a>
             </div>

@@ -47,8 +47,8 @@ export default function Step3TestUpload() {
         <label
           className={`block w-full p-8 border-2 border-dashed rounded-card text-center cursor-pointer transition-all
             ${uploaded
-              ? "border-soft-green bg-soft-green/5"
-              : "border-light-gray bg-white hover:border-soft-green/50"
+              ? "border-primary bg-primary-50/30"
+              : "border-light-gray bg-white hover:border-primary/40"
             }`}
         >
           <input
@@ -60,7 +60,7 @@ export default function Step3TestUpload() {
           {uploaded ? (
             <>
               <div className="text-4xl mb-2">✅</div>
-              <p className="font-semibold text-soft-green">{fileName}</p>
+              <p className="font-semibold text-primary">{fileName}</p>
               <p className="text-xs text-mid-gray mt-1">파일 업로드 완료</p>
             </>
           ) : (
@@ -70,7 +70,7 @@ export default function Step3TestUpload() {
               <p className="text-xs text-mid-gray mt-1">
                 사진 또는 PDF (K-WISC, 발달검사 등)
               </p>
-              <div className="mt-3 inline-block px-4 py-2 bg-soft-green/10 text-soft-green rounded-button text-sm font-semibold">
+              <div className="mt-3 inline-block px-4 py-2 bg-primary-50 text-primary rounded-button text-sm font-semibold">
                 📎 파일 선택
               </div>
             </>
@@ -90,7 +90,7 @@ export default function Step3TestUpload() {
         onClick={handleSkip}
         className="w-full py-3 mb-6 rounded-button font-medium text-base
                    bg-white text-mid-gray border border-light-gray
-                   hover:border-soft-green/50 transition-all"
+                   hover:border-primary/40 transition-all"
       >
         🙅 안 했어요 / 나중에
       </button>
@@ -106,16 +106,14 @@ export default function Step3TestUpload() {
           onClick={() => setOnboardingStep(2)}
           className="flex-1 h-12 rounded-button font-semibold text-base
                      bg-white text-mid-gray border border-light-gray
-                     hover:border-soft-green transition-all"
+                     hover:border-primary/40 transition-all"
         >
           ← 이전
         </button>
         {uploaded && (
           <button
             onClick={handleComplete}
-            className="flex-[2] h-12 rounded-button font-semibold text-base
-                       bg-soft-green text-white shadow-md
-                       hover:bg-soft-green/90 active:scale-[0.98] transition-all"
+            className="flex-[2] h-12 btn-primary"
           >
             🌱 시작하기!
           </button>

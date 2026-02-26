@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import { useStore } from "@/store/useStore";
 import { ActivityType, ActivityRecord } from "@/types";
+import MaterialIcon from "@/components/ui/MaterialIcon";
 
 interface RecordSheetProps {
   type: ActivityType;
@@ -138,12 +139,12 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
     onClose();
   };
 
-  const titles: Record<ActivityType, string> = {
-    photo: "📸 사진 올리기",
-    activity: "⏱️ 활동 기록",
-    question: "💬 아이 질문 기록",
-    reading: "📖 독서 기록",
-    emotion: "😤 감정 메모",
+  const titles: Record<ActivityType, { icon: string; label: string }> = {
+    photo:    { icon: "photo_camera", label: "사진 올리기" },
+    activity: { icon: "timer",        label: "활동 기록" },
+    question: { icon: "chat_bubble",  label: "아이 질문 기록" },
+    reading:  { icon: "menu_book",    label: "독서 기록" },
+    emotion:  { icon: "mood",         label: "감정 메모" },
   };
 
   return (
@@ -164,14 +165,22 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
         <div className="px-5 pb-8 max-h-[70vh] overflow-y-auto">
           {/* 헤더 */}
           <div className="flex items-center justify-between mb-4">
-            <h3 id="record-sheet-title" className="text-lg font-bold">{titles[type]}</h3>
-            <button 
-              onClick={onClose} 
-              className="text-mid-gray text-xl hover:text-dark-gray transition-colors"
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 rounded-xl bg-primary-50 flex items-center justify-center">
+                <MaterialIcon name={titles[type].icon} size={18} className="text-primary" />
+              </div>
+              <h3 id="record-sheet-title" className="text-base font-bold text-slate-900">
+                {titles[type].label}
+              </h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center
+                         hover:bg-slate-200 transition-colors"
               aria-label="닫기"
               type="button"
             >
-              ✕
+              <MaterialIcon name="close" size={16} className="text-slate-500" />
             </button>
           </div>
 
@@ -180,7 +189,7 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
             <div className="space-y-4">
               <button
                 onClick={() => fileRef.current?.click()}
-                className="w-full py-8 border-2 border-dashed border-light-gray rounded-card text-center hover:border-soft-green transition-all"
+                className="w-full py-8 border-2 border-dashed border-slate-200 rounded-xl text-center hover:border-primary transition-all"
               >
                 <input
                   ref={fileRef}
@@ -202,12 +211,15 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                       className="max-h-40 mx-auto rounded-lg object-contain"
                       unoptimized
                     />
-                    <p className="text-xs text-soft-green mt-2">✅ {fileName}</p>
+                    <p className="text-xs text-primary-600 mt-2 flex items-center justify-center gap-1">
+                    <MaterialIcon name="check_circle" size={12} filled />
+                    {fileName}
+                  </p>
                   </div>
                 ) : (
                   <>
-                    <p className="text-3xl mb-2">📷</p>
-                    <p className="text-sm text-mid-gray">탭해서 사진 선택</p>
+                    <MaterialIcon name="add_photo_alternate" size={36} className="text-slate-300 mx-auto mb-2" />
+                    <p className="text-sm text-slate-500">탭해서 사진 선택</p>
                   </>
                 )}
               </button>
@@ -215,8 +227,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="메모 (선택)"
-                className="w-full h-20 px-3 py-2 border border-light-gray rounded-button text-sm resize-none
-                           focus:outline-none focus:border-soft-green"
+                className="w-full h-20 px-3 py-2 border border-slate-200 rounded-button text-sm resize-none
+                           focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
           )}
@@ -230,10 +242,10 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                     <button
                       key={cat.value}
                       onClick={() => setCategory(cat.value)}
-                      className={`py-3 rounded-card text-center text-sm font-medium transition-all
+                      className={`py-3 rounded-xl text-center text-sm font-medium transition-all
                         ${category === cat.value
-                          ? "bg-soft-green text-white shadow-md"
-                          : "bg-warm-beige text-dark-gray hover:bg-soft-green/10"
+                          ? "bg-primary text-white shadow-stitch-btn"
+                          : "bg-surface text-slate-700 hover:bg-primary/10"
                         }`}
                     >
                       <span className="text-xl block mb-1">{cat.emoji}</span>
@@ -249,8 +261,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   placeholder="예: 30"
-                  className="w-full h-12 px-4 border border-light-gray rounded-button text-base
-                             focus:outline-none focus:border-soft-green"
+                  className="w-full h-12 px-4 border border-slate-200 rounded-button text-base
+                             focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
               <div>
@@ -259,8 +271,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="예: 72조각 공룡 퍼즐 혼자 완성!"
-                  className="w-full h-20 px-3 py-2 border border-light-gray rounded-button text-sm resize-none
-                             focus:outline-none focus:border-soft-green"
+                  className="w-full h-20 px-3 py-2 border border-slate-200 rounded-button text-sm resize-none
+                             focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </div>
@@ -274,8 +286,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   value={quote}
                   onChange={(e) => setQuote(e.target.value)}
                   placeholder='예: "엄마 왜 달은 낮에도 있어?"'
-                  className="w-full h-24 px-3 py-2 border border-light-gray rounded-button text-sm resize-none
-                             focus:outline-none focus:border-soft-green"
+                  className="w-full h-24 px-3 py-2 border border-slate-200 rounded-button text-sm resize-none
+                             focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
               <div>
@@ -285,8 +297,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   value={context}
                   onChange={(e) => setContext(e.target.value)}
                   placeholder="예: 산책 중에 갑자기"
-                  className="w-full h-12 px-4 border border-light-gray rounded-button text-sm
-                             focus:outline-none focus:border-soft-green"
+                  className="w-full h-12 px-4 border border-slate-200 rounded-button text-sm
+                             focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </div>
@@ -301,8 +313,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   value={bookTitle}
                   onChange={(e) => setBookTitle(e.target.value)}
                   placeholder="예: 구름빵"
-                  className="w-full h-12 px-4 border border-light-gray rounded-button text-base
-                             focus:outline-none focus:border-soft-green"
+                  className="w-full h-12 px-4 border border-slate-200 rounded-button text-base
+                             focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
               <div>
@@ -311,14 +323,14 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   <button
                     onClick={() => setReadAlone(false)}
                     className={`flex-1 py-3 rounded-button font-medium text-sm transition-all
-                      ${!readAlone ? "bg-soft-green text-white" : "bg-warm-beige text-dark-gray"}`}
+                      ${!readAlone ? "bg-primary text-white shadow-stitch-btn" : "bg-surface text-slate-700"}`}
                   >
                     📖 같이 읽음
                   </button>
                   <button
                     onClick={() => setReadAlone(true)}
                     className={`flex-1 py-3 rounded-button font-medium text-sm transition-all
-                      ${readAlone ? "bg-soft-green text-white" : "bg-warm-beige text-dark-gray"}`}
+                      ${readAlone ? "bg-primary text-white shadow-stitch-btn" : "bg-surface text-slate-700"}`}
                   >
                     🧑 혼자 읽음
                   </button>
@@ -331,8 +343,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   placeholder="예: 20"
-                  className="w-full h-12 px-4 border border-light-gray rounded-button text-sm
-                             focus:outline-none focus:border-soft-green"
+                  className="w-full h-12 px-4 border border-slate-200 rounded-button text-sm
+                             focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </div>
@@ -347,10 +359,10 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                     <button
                       key={em.label}
                       onClick={() => setSelectedEmotion(em)}
-                      className={`py-3 rounded-card text-center transition-all
+                      className={`py-3 rounded-xl text-center transition-all
                         ${selectedEmotion?.label === em.label
-                          ? "bg-soft-green text-white shadow-md"
-                          : "bg-warm-beige text-dark-gray hover:bg-soft-green/10"
+                          ? "bg-primary/10 border-2 border-primary shadow-none"
+                          : "bg-surface text-slate-700 border-2 border-transparent hover:bg-primary/5"
                         }`}
                     >
                       <span className="text-2xl block mb-1">{em.emoji}</span>
@@ -366,8 +378,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   placeholder="예: 퍼즐 완성하고 뿌듯해했어요"
-                  className="w-full h-12 px-4 border border-light-gray rounded-button text-sm
-                             focus:outline-none focus:border-soft-green"
+                  className="w-full h-12 px-4 border border-slate-200 rounded-button text-sm
+                             focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
                 />
               </div>
             </div>
@@ -376,11 +388,10 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
           {/* 저장 버튼 */}
           <button
             onClick={handleSave}
-            className="w-full h-12 mt-6 rounded-button font-semibold text-base
-                       bg-soft-green text-white shadow-md
-                       hover:bg-soft-green/90 active:scale-[0.98] transition-all"
+            className="btn-primary mt-6 flex items-center justify-center gap-2"
           >
-            ✅ 기록 완료
+            <MaterialIcon name="check_circle" size={18} filled />
+            기록 완료
           </button>
         </div>
       </div>

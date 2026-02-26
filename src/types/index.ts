@@ -93,6 +93,7 @@ export interface RecommendedActivity {
   domains: string[];
   duration: string;
   icon: string;
+  imageUrl?: string;
 }
 
 // 추천 교구
@@ -102,6 +103,8 @@ export interface RecommendedProduct {
   reason: string;
   link: string;
   icon: string;
+  imageUrl?: string;
+  review?: string;
 }
 
 // 월간 데이터 포인트

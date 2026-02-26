@@ -7,19 +7,21 @@ import RecommendTab from "@/components/recommend/RecommendTab";
 import MonthlyTab from "@/components/monthly/MonthlyTab";
 import SettingsModal from "@/components/ui/SettingsModal";
 import ParentGuide from "@/components/guide/ParentGuide";
+import MaterialIcon from "@/components/ui/MaterialIcon";
 
 type Tab = "home" | "report" | "recommend" | "monthly";
 
-const TABS: { id: Tab; icon: string; iconActive: string; label: string }[] = [
-  { id: "home", icon: "🏠", iconActive: "🏡", label: "홈" },
-  { id: "report", icon: "📊", iconActive: "📊", label: "리포트" },
-  { id: "recommend", icon: "💡", iconActive: "💡", label: "추천" },
-  { id: "monthly", icon: "📈", iconActive: "📈", label: "추이" },
+const TABS: { id: Tab; icon: string; label: string }[] = [
+  { id: "home",      icon: "home",           label: "홈" },
+  { id: "report",    icon: "show_chart",     label: "리포트" },
+  { id: "recommend", icon: "sports_esports", label: "놀이" },
+  { id: "monthly",   icon: "insights",       label: "추이" },
 ];
 
 /**
- * 메인 앱 v2 — 하단 탭 네비게이션 (디자인 개선)
- * 탭 바: 유리 효과 + 부드러운 그림자
+ * 메인 앱 v3 — Stitch 디자인 적용
+ * 헤더: child_care + 알림/가이드/설정 버튼
+ * 탭 바: Material Symbols + Sky Blue 활성 인디케이터
  */
 export default function MainApp() {
   const [activeTab, setActiveTab] = useState<Tab>("home");
@@ -27,52 +29,50 @@ export default function MainApp() {
   const [showGuide, setShowGuide] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col bg-warm-beige">
-      {/* 상단 바 — 미니멀 + 투명 */}
-      <header className="flex items-center justify-between px-5 pt-4 pb-2">
-        <div className="flex items-center gap-2">
-          <span className="text-xl">🌱</span>
-          <span className="text-sm font-semibold text-soft-green hidden">성장 트래커</span>
+    <div className="min-h-screen flex flex-col bg-surface">
+      {/* 상단 헤더 */}
+      <header className="flex items-center justify-between px-5 pt-5 pb-2">
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+            <MaterialIcon name="child_care" size={20} className="text-primary" />
+          </div>
+          <span className="text-base font-bold text-slate-900">성장 트래커</span>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowGuide(true)}
-            className="w-9 h-9 rounded-full bg-white/80 shadow-badge
+            className="w-9 h-9 rounded-full bg-white shadow-stitch-card border border-slate-100
                        flex items-center justify-center
-                       hover:shadow-card transition-all duration-200"
+                       hover:shadow-stitch-card-hover transition-all duration-200"
             aria-label="가이드"
           >
-            <span className="text-sm">📚</span>
+            <MaterialIcon name="menu_book" size={18} className="text-slate-600" />
           </button>
           <button
             onClick={() => setShowSettings(true)}
-            className="w-9 h-9 rounded-full bg-white/80 shadow-badge
+            className="w-9 h-9 rounded-full bg-white shadow-stitch-card border border-slate-100
                        flex items-center justify-center
-                       hover:shadow-card transition-all duration-200"
+                       hover:shadow-stitch-card-hover transition-all duration-200"
             aria-label="설정"
           >
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-            <path d="M9 11.25C10.2426 11.25 11.25 10.2426 11.25 9C11.25 7.75736 10.2426 6.75 9 6.75C7.75736 6.75 6.75 7.75736 6.75 9C6.75 10.2426 7.75736 11.25 9 11.25Z" stroke="#888" strokeWidth="1.5" strokeLinecap="round"/>
-            <path d="M7.3 2.1L7.65 3.15C7.85 3.7 7.55 4.3 7 4.5L6.5 4.7C5.95 4.9 5.35 4.6 5.15 4.05L4.8 3M10.7 2.1L10.35 3.15C10.15 3.7 10.45 4.3 11 4.5L11.5 4.7C12.05 4.9 12.65 4.6 12.85 4.05L13.2 3" stroke="#888" strokeWidth="1.2" strokeLinecap="round" opacity="0.6"/>
-          </svg>
+            <MaterialIcon name="settings" size={18} className="text-slate-600" />
           </button>
         </div>
       </header>
 
       {/* 메인 콘텐츠 영역 */}
       <main className="flex-1 overflow-y-auto pb-24">
-        {activeTab === "home" && <HomeTab />}
-        {activeTab === "report" && <ReportTab />}
+        {activeTab === "home"      && <HomeTab />}
+        {activeTab === "report"    && <ReportTab />}
         {activeTab === "recommend" && <RecommendTab />}
-        {activeTab === "monthly" && <MonthlyTab />}
+        {activeTab === "monthly"   && <MonthlyTab />}
       </main>
 
-      {/* 하단 탭 바 — 글래스 모피즘 + 둥근 모서리 */}
+      {/* 하단 탭 바 */}
       <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50">
-        <div className="mx-3 mb-2 px-4 pt-2.5 pb-3 rounded-2xl
-                        glass-strong
+        <div className="bg-white/90 backdrop-blur-xl border-t border-slate-100
                         shadow-tab-bar safe-bottom">
-          <div className="flex justify-around">
+          <div className="flex justify-around px-2 pt-2 pb-3">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -80,27 +80,26 @@ export default function MainApp() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
-                    relative flex flex-col items-center gap-0.5
+                    relative flex flex-col items-center gap-1
                     min-w-[48px] py-1 px-3 rounded-xl
                     transition-all duration-200
-                    ${isActive
-                      ? "text-soft-green"
-                      : "text-mid-gray hover:text-soft-green/60"
-                    }
+                    ${isActive ? "text-primary" : "text-slate-400 hover:text-primary/60"}
                   `}
                 >
-                  {/* 활성 인디케이터 — 부드러운 글로우 */}
+                  {/* 활성 인디케이터 */}
                   {isActive && (
-                    <div className="absolute -top-0.5 left-1/2 -translate-x-1/2
-                                    w-5 h-1 rounded-full bg-soft-green
-                                    shadow-btn-green animate-scale-in-sm" />
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2
+                                    w-6 h-0.5 rounded-full bg-primary
+                                    animate-scale-in-sm" />
                   )}
-                  <span className="text-xl transition-transform duration-200"
-                        style={{ transform: isActive ? 'scale(1.12)' : 'scale(1)' }}>
-                    {isActive ? tab.iconActive : tab.icon}
-                  </span>
-                  <span className={`text-[10px] transition-all duration-200 ${
-                    isActive ? "font-bold text-soft-green-600" : "font-medium"
+                  <MaterialIcon
+                    name={tab.icon}
+                    size={22}
+                    filled={isActive}
+                    className={`transition-transform duration-200 ${isActive ? "scale-110" : ""}`}
+                  />
+                  <span className={`text-[10px] transition-all duration-200 leading-none ${
+                    isActive ? "font-bold" : "font-medium"
                   }`}>
                     {tab.label}
                   </span>
@@ -113,7 +112,7 @@ export default function MainApp() {
 
       {/* 설정 모달 */}
       {showSettings && <SettingsModal onClose={() => setShowSettings(false)} />}
-      
+
       {/* 부모 가이드 모달 */}
       {showGuide && <ParentGuide onClose={() => setShowGuide(false)} />}
     </div>
