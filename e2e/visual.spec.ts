@@ -75,15 +75,15 @@ test.describe("Stitch 디자인 시각적 검증", () => {
       page.locator("span").filter({ hasText: /D\+\d+/ }).first()
     ).toBeVisible();
 
-    // "이번 주 발달" 섹션 (Growth at a Glance)
-    await expect(page.locator("h3:has-text('이번 주 발달')")).toBeVisible();
+    // "Growth at a Glance" 섹션
+    await expect(page.locator("h3:has-text('Growth at a Glance')")).toBeVisible();
 
     // 상위 2개 도메인 카드 (2열 그리드)
     const domainCards = page.locator(".grid.grid-cols-2 > div");
     expect(await domainCards.count()).toBeGreaterThanOrEqual(2);
 
     // Quick Logs 섹션
-    await expect(page.locator("h3:has-text('빠른 기록')")).toBeVisible();
+    await expect(page.locator("h3:has-text('Quick Logs')")).toBeVisible();
 
     // 5개 Quick Log 버튼
     for (const label of ["사진", "활동", "질문", "독서", "감정"]) {
@@ -134,20 +134,22 @@ test.describe("Stitch 디자인 시각적 검증", () => {
     await goToTab(page, "리포트");
 
     // 탭 헤더
-    await expect(page.locator("h2:has-text('주간 리포트')")).toBeVisible();
+    await expect(page.locator("h2:has-text('성장 리포트')")).toBeVisible();
 
     // 레이더 차트 SVG 렌더링 (lazy load 대기)
     await page.waitForTimeout(1500);
     await expect(page.locator("svg.recharts-surface").first()).toBeVisible();
 
-    // 하이라이트 섹션
-    await expect(page.locator("h3:has-text('이번 주 하이라이트')")).toBeVisible();
+    // 영역별 발달 분석 섹션
+    await expect(page.locator("h3:has-text('영역별 발달 분석')")).toBeVisible();
 
     // 발달 구간 섹션
     await expect(page.locator("h3:has-text('발달 구간')")).toBeVisible();
 
-    // trend-indicator 존재
-    await expect(page.locator(".trend-indicator").first()).toBeVisible();
+    // 트렌드 아이콘 (trending_up / trending_flat / trending_down) 존재
+    await expect(
+      page.locator('.material-symbols-outlined').filter({ hasText: /trending/ }).first()
+    ).toBeVisible();
 
     await page.screenshot({ path: "test-results/04-report.png", fullPage: true });
   });
@@ -200,13 +202,12 @@ test.describe("Stitch 디자인 시각적 검증", () => {
       await expect(page.locator(`button:has-text("${label}")`)).toBeVisible();
     }
 
-    // 도메인 칩 클릭 → gradient inline style 확인
+    // 도메인 칩 클릭 → bg-primary 활성 클래스 확인
     const langChip = page.locator('button:has-text("언어이해")');
     await langChip.click({ force: true });
     await page.waitForTimeout(600);
 
-    const style = await langChip.getAttribute("style");
-    expect(style).toMatch(/gradient/i);
+    await expect(langChip).toHaveClass(/bg-primary/);
 
     // 차트 SVG 로드 대기
     await page.waitForTimeout(1000);
@@ -289,8 +290,8 @@ test.describe("Stitch 디자인 시각적 검증", () => {
     await page.reload();
     await page.waitForLoadState("networkidle");
 
-    // Step 1: bg-surface 배경 (OnboardingFlow div)
-    const onboardingDiv = page.locator("div.min-h-screen.bg-surface").first();
+    // Step 1: bg-surface-100 배경 (OnboardingFlow div)
+    const onboardingDiv = page.locator("div.min-h-screen.bg-surface-100").first();
     await expect(onboardingDiv).toBeVisible();
 
     // 닉네임 입력
@@ -307,7 +308,7 @@ test.describe("Stitch 디자인 시각적 검증", () => {
 
     // 성별 선택 후 다음
     await page.locator('button:has-text("남아")').click({ force: true });
-    await page.locator('button:has-text("다음으로")').click({ force: true });
+    await page.locator('button:has-text("다음 단계")').click({ force: true });
 
     // Step 2: 기질 화면
     await page.waitForSelector("text=어떤 아이인가요");
@@ -319,13 +320,13 @@ test.describe("Stitch 디자인 시각적 검증", () => {
     ).toHaveClass(/bg-primary-50/);
 
     await page.screenshot({ path: "test-results/09b-onboarding-step2.png" });
-    await page.locator('button:has-text("다음으로")').click({ force: true });
+    await page.locator('button:has-text("다음 단계")').click({ force: true });
 
     // Step 3: 건너뛰기 → 메인 앱
-    await page.waitForSelector('button:has-text("안 했어요")');
+    await page.waitForSelector('button:has-text("검사 없이 시작하기")');
     await page.screenshot({ path: "test-results/09c-onboarding-step3.png" });
 
-    await page.locator('button:has-text("안 했어요")').click({ force: true });
+    await page.locator('button:has-text("검사 없이 시작하기")').click({ force: true });
     await page.waitForSelector("text=성장 트래커", { timeout: 15000 });
     await page.screenshot({ path: "test-results/09d-main-app.png" });
   });

@@ -47,6 +47,9 @@ interface AppState {
   monthlyData: MonthlyDataPoint[];
   milestones: Milestone[];
 
+  // K-DST 체크리스트 (키: "childId_range_taskIndex")
+  kdstChecks: Record<string, boolean>;
+
   // 액션
   setOnboardingStep: (step: number) => void;
   setChild: (child: ChildProfile) => void;
@@ -62,6 +65,7 @@ interface AppState {
   switchChild: (childId: string) => void;
   removeChild: (childId: string) => void;
   
+  toggleKDSTCheck: (key: string) => void;
   recalculateMonthlyData: () => void;
   resetAll: () => void;
 }
@@ -89,6 +93,7 @@ export const useStore = create<AppState>()(
       products: [],
       monthlyData: [],
       milestones: [],
+      kdstChecks: {},
 
       // 온보딩
       setOnboardingStep: (step) => set({ onboardingStep: step }),
@@ -221,6 +226,12 @@ export const useStore = create<AppState>()(
           };
         }),
 
+      // K-DST 체크 토글
+      toggleKDSTCheck: (key) =>
+        set((state) => ({
+          kdstChecks: { ...state.kdstChecks, [key]: !state.kdstChecks[key] },
+        })),
+
       // 월간 점수 수동 재계산 (앱 첫 로드 시 기존 사용자 데이터 갱신용)
       recalculateMonthlyData: () =>
         set((state) => {
@@ -245,6 +256,7 @@ export const useStore = create<AppState>()(
           products: [],
           monthlyData: [],
           milestones: [],
+          kdstChecks: {},
         }),
     }),
     {

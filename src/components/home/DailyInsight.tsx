@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useStore } from "@/store/useStore";
 import { callApi } from "@/lib/api-client";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { getOverallSummary } from "@/lib/interpretation";
 
 interface Insight {
   type: string;
@@ -30,6 +31,7 @@ const FALLBACK_ANALYSIS: AnalysisResult = {
 export default function DailyInsight() {
   const activities = useStore((s) => s.activities);
   const child = useStore((s) => s.child);
+  const weeklyReport = useStore((s) => s.weeklyReport);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -108,6 +110,17 @@ export default function DailyInsight() {
             </span>
           )}
         </div>
+
+        {/* 종합 발달 상태 한줄 */}
+        {weeklyReport?.scores && (() => {
+          const summary = getOverallSummary(weeklyReport.scores);
+          return (
+            <p className="text-xs font-semibold text-accent-yellow-text/80 mb-2 flex items-center gap-1">
+              <span>{summary.emoji}</span>
+              <span>{child?.nickname} 이번 주: {summary.message}</span>
+            </p>
+          );
+        })()}
 
         {/* 인사이트 목록 */}
         <div className="space-y-1.5">

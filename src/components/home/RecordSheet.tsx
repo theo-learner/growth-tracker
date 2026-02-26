@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useStore } from "@/store/useStore";
 import { ActivityType, ActivityRecord } from "@/types";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import CompletionScreen from "./CompletionScreen";
 
 interface RecordSheetProps {
   type: ActivityType;
@@ -35,6 +36,10 @@ const EMOTION_OPTIONS = [
 export default function RecordSheet({ type, onClose }: RecordSheetProps) {
   const addActivity = useStore((s) => s.addActivity);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // 완료 화면 상태
+  const [phase, setPhase] = useState<"input" | "complete">("input");
+  const [savedRecord, setSavedRecord] = useState<ActivityRecord | null>(null);
 
   // 공통 상태
   const [note, setNote] = useState("");
@@ -136,7 +141,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
     }
 
     addActivity(record);
-    onClose();
+    setSavedRecord(record);
+    setPhase("complete");
   };
 
   const titles: Record<ActivityType, { icon: string; label: string }> = {
@@ -162,6 +168,13 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
         {/* 핸들 */}
         <div className="bottom-sheet-handle" />
 
+        {/* 완료 화면 */}
+        {phase === "complete" && savedRecord && (
+          <CompletionScreen record={savedRecord} onClose={onClose} />
+        )}
+
+        {/* 입력 폼 */}
+        {phase === "input" && (
         <div className="px-5 pb-8 max-h-[70vh] overflow-y-auto">
           {/* 헤더 */}
           <div className="flex items-center justify-between mb-4">
@@ -394,6 +407,7 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
             기록 완료
           </button>
         </div>
+        )}
       </div>
     </>
   );

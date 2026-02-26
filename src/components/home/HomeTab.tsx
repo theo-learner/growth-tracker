@@ -6,8 +6,11 @@ import RecordButton from "./RecordButton";
 import Timeline from "./Timeline";
 import RecordSheet from "./RecordSheet";
 import DailyInsight from "./DailyInsight";
+import KDSTChecklist from "./KDSTChecklist";
+import QuickInput from "./QuickInput";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { ActivityType, DomainKey } from "@/types";
+import { interpretScore, getOverallSummary } from "@/lib/interpretation";
 
 const DOMAIN_LABELS: Record<DomainKey, string> = {
   verbalComprehension: "언어이해",
@@ -54,12 +57,18 @@ export default function HomeTab() {
     (a) => new Date(a.timestamp).toDateString() === todayStr
   );
 
-  // 상위 2개 발달 영역 추출
-  const topDomains = useMemo(() => {
+  // 전 발달 영역 (점수 높은 순)
+  const allDomains = useMemo(() => {
     if (!weeklyReport?.scores) return [];
-    return (Object.entries(weeklyReport.scores) as [DomainKey, number][])
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 2);
+    return (Object.entries(weeklyReport.scores) as [DomainKey, number][]).sort(
+      ([, a], [, b]) => b - a
+    );
+  }, [weeklyReport]);
+
+  // 종합 상태
+  const overallSummary = useMemo(() => {
+    if (!weeklyReport?.scores) return null;
+    return getOverallSummary(weeklyReport.scores);
   }, [weeklyReport]);
 
   // 영역별 트렌드 계산
@@ -106,53 +115,59 @@ export default function HomeTab() {
       {/* AI Daily Note (DailyInsight) */}
       <DailyInsight />
 
-      {/* Growth at a Glance — 상위 2개 발달 영역 */}
-      {topDomains.length > 0 && (
+      {/* 이번 주 발달 상태 — 전 5영역 + 안심/주의 해석 */}
+      {allDomains.length > 0 && (
         <div className="mt-5">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-base font-bold text-dark-gray">Growth at a Glance</h3>
+            <h3 className="text-base font-bold text-dark-gray">이번 주 발달 상태</h3>
             <span className="text-xs font-semibold text-primary-600 cursor-default">
               {weeklyReport?.weekLabel}
             </span>
           </div>
-          <div className="grid grid-cols-2 gap-3">
-            {topDomains.map(([key, score], idx) => {
+
+          {/* 종합 상태 배너 */}
+          {overallSummary && (
+            <div className={`rounded-xl px-4 py-3 mb-3 flex items-center gap-2 border ${
+              overallSummary.level === "good"
+                ? "bg-primary-50 border-primary-100"
+                : overallSummary.level === "normal"
+                  ? "bg-amber-50 border-amber-100"
+                  : "bg-rose-50 border-rose-100"
+            }`}>
+              <span className="text-lg">{overallSummary.emoji}</span>
+              <p className="text-sm font-semibold text-dark-gray">{overallSummary.message}</p>
+            </div>
+          )}
+
+          {/* 영역별 리스트 */}
+          <div className="bg-white rounded-xl border border-slate-100 shadow-stitch-card divide-y divide-slate-50">
+            {allDomains.map(([key, score]) => {
               const trend = getDomainTrend(key);
               const prevScore = weeklyReport?.prevScores[key] ?? score;
               const diff = score - prevScore;
-              // Stitch: 첫 번째 primary/10, 두 번째 purple-50
-              const cardBg = idx === 0
-                ? "bg-primary-50 border-primary-100"
-                : "bg-purple-50 border-purple-100";
-              const iconBg = idx === 0
-                ? "bg-primary-100"
-                : "bg-purple-100";
-              const iconColor = idx === 0 ? "text-primary" : "text-purple-600";
+              const interp = interpretScore(score);
               return (
-                <div key={key}
-                  className={`${cardBg} rounded-xl border shadow-stitch-card p-4 flex flex-col gap-2`}>
-                  <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center`}>
-                    <MaterialIcon name={DOMAIN_ICONS[key]} size={20} className={iconColor} />
+                <div key={key} className="flex items-center gap-3 px-4 py-3">
+                  <div className={`w-9 h-9 rounded-xl ${interp.bgColor} flex items-center justify-center shrink-0`}>
+                    <MaterialIcon name={DOMAIN_ICONS[key]} size={18} className={interp.textColor} />
                   </div>
-                  <div>
-                    <p className="text-xs text-mid-gray font-medium uppercase tracking-wide">
-                      {DOMAIN_LABELS[key]}
-                    </p>
-                    <p className="text-xl font-bold text-dark-gray">
-                      {score}<span className="text-sm font-normal text-mid-gray ml-0.5">점</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-dark-gray">{DOMAIN_LABELS[key]}</p>
+                    <p className={`text-xs font-medium ${interp.textColor}`}>
+                      {interp.emoji} {interp.message}
                     </p>
                   </div>
-                  <div className={`text-[10px] font-bold flex items-center gap-0.5 ${
-                    trend === "up" ? "text-primary-600" : trend === "down" ? "text-rose-500" : "text-mid-gray"
-                  }`}>
-                    <MaterialIcon
-                      name={trend === "up" ? "trending_up" : trend === "down" ? "trending_down" : "trending_flat"}
-                      size={14}
-                    />
-                    {diff !== 0
-                      ? `${diff > 0 ? "+" : ""}${diff}점`
-                      : "변화 없음"
-                    }
+                  <div className="text-right shrink-0">
+                    <p className="text-base font-bold text-dark-gray">{score}<span className="text-xs font-normal text-mid-gray">점</span></p>
+                    <div className={`text-[10px] font-bold flex items-center justify-end gap-0.5 ${
+                      trend === "up" ? "text-primary-600" : trend === "down" ? "text-rose-500" : "text-mid-gray"
+                    }`}>
+                      <MaterialIcon
+                        name={trend === "up" ? "trending_up" : trend === "down" ? "trending_down" : "trending_flat"}
+                        size={12}
+                      />
+                      {diff !== 0 ? `${diff > 0 ? "+" : ""}${diff}점` : "유지"}
+                    </div>
                   </div>
                 </div>
               );
@@ -160,6 +175,17 @@ export default function HomeTab() {
           </div>
         </div>
       )}
+
+      {/* K-DST 발달 체크리스트 */}
+      <div className="mt-5">
+        <KDSTChecklist />
+      </div>
+
+      {/* Quick Input — 자연어 활동 기록 */}
+      <div className="mt-5">
+        <h3 className="text-base font-bold text-dark-gray mb-3">AI 기록</h3>
+        <QuickInput />
+      </div>
 
       {/* Quick Logs — 가로 스크롤 원형 버튼 */}
       <div className="mt-5">

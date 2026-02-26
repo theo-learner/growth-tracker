@@ -35,7 +35,7 @@ export default async function globalSetup() {
   await page.click('button:has-text("여아")', { force: true });
 
   // 다음으로
-  await page.click('button:has-text("다음으로")', { force: true });
+  await page.click('button:has-text("다음 단계")', { force: true });
 
   // ─── Step 2: 기질 파악 ───────────────────────────────────────
   await page.waitForSelector("text=어떤 아이인가요", { timeout: 10000 });
@@ -44,11 +44,11 @@ export default async function globalSetup() {
   await page.click('button:has-text("낯선 곳도 씩씩하게")', { force: true });
 
   // 다음으로
-  await page.click('button:has-text("다음으로")', { force: true });
+  await page.click('button:has-text("다음 단계")', { force: true });
 
   // ─── Step 3: 검사 결과 건너뛰기 ─────────────────────────────
-  await page.waitForSelector('button:has-text("안 했어요")', { timeout: 10000 });
-  await page.click('button:has-text("안 했어요")', { force: true });
+  await page.waitForSelector('button:has-text("검사 없이 시작하기")', { timeout: 10000 });
+  await page.click('button:has-text("검사 없이 시작하기")', { force: true });
 
   // 메인 앱 로드 대기
   await page.waitForSelector("text=성장 트래커", { timeout: 15000 });

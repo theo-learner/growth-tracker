@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useStore } from "@/store/useStore";
 import { RecommendedActivity, RecommendedProduct, ActivityRecord, DomainKey } from "@/types";
 import { callApi } from "@/lib/api-client";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { getFocusArea } from "@/lib/focus-area";
+import { interpretScore } from "@/lib/interpretation";
 
 // 영역별 컬러 배너 (imageUrl 없을 때 폴백)
 const DOMAIN_BANNER_COLORS: Record<string, string> = {
@@ -42,6 +44,11 @@ export default function RecommendTab() {
   const [products, setProducts] = useState<RecommendedProduct[]>(storeProds);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
+  const focusArea = useMemo(() => {
+    if (!weeklyReport) return null;
+    return getFocusArea(weeklyReport);
+  }, [weeklyReport]);
 
   useEffect(() => {
     setRecommendations(storeRecs);
@@ -101,10 +108,66 @@ export default function RecommendTab() {
       </div>
 
       <div className="px-4 space-y-8 mt-4">
+
+        {/* 이번 주 집중 영역 카드 */}
+        {focusArea && (() => {
+          const interp = interpretScore(focusArea.score);
+          return (
+            <section>
+              <h3 className="text-base font-bold text-dark-gray mb-3 flex items-center gap-2">
+                <MaterialIcon name="my_location" size={18} className="text-primary" />
+                이번 주 집중 영역
+              </h3>
+              <div className={`rounded-xl border p-5 ${interp.bgColor} ${interp.borderColor}`}>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-12 h-12 rounded-xl bg-white/80 shadow-stitch-card flex items-center justify-center">
+                    <span className="text-2xl">{interp.emoji}</span>
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-dark-gray">{focusArea.label}</p>
+                    <p className={`text-xs font-semibold ${interp.textColor}`}>현재 {focusArea.score}점 · {interp.message}</p>
+                  </div>
+                </div>
+                <p className="text-sm text-dark-gray leading-relaxed">{focusArea.explanation}</p>
+              </div>
+            </section>
+          );
+        })()}
+
+        {/* 비용 없는 놀이 */}
+        {focusArea && (
+          <section>
+            <h3 className="text-base font-bold text-dark-gray mb-3 flex items-center gap-2">
+              <MaterialIcon name="volunteer_activism" size={18} className="text-primary" />
+              지금 당장 해볼 수 있는 놀이
+              <span className="text-xs font-normal text-mid-gray">무료</span>
+            </h3>
+            <div className="space-y-2">
+              {focusArea.freePlayIdeas.map((idea, i) => (
+                <div key={i} className="flex items-center gap-3 bg-white rounded-xl border border-slate-100 shadow-stitch-card p-3">
+                  <span className="text-2xl shrink-0">{idea.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-dark-gray">{idea.title}</p>
+                    <p className="text-xs text-mid-gray">{idea.description}</p>
+                  </div>
+                  <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-1 rounded-full shrink-0">
+                    {idea.duration}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* 추천 활동 섹션 */}
         <section>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-bold text-dark-gray">추천 활동</h3>
+            <div>
+              <h3 className="text-base font-bold text-dark-gray">추천 활동</h3>
+              {focusArea && (
+                <p className="text-xs text-mid-gray mt-0.5">{focusArea.label} 강화 중심</p>
+              )}
+            </div>
             <span className="text-primary-600 text-sm font-semibold">전체 보기</span>
           </div>
 

@@ -52,7 +52,7 @@ const AGE_BASELINE: Record<number, Record<DomainKey, number>> = {
 
 // 활동 카테고리 키워드 → 영역 가중치 매핑
 // 배열 순서대로 매칭 시도 (첫 번째 매칭만 적용)
-const CATEGORY_DOMAIN_MAP: Array<[
+export const CATEGORY_DOMAIN_MAP: Array<[
   string[],
   Partial<Record<DomainKey, number>>
 ]> = [
