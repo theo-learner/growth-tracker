@@ -16,7 +16,7 @@ export const STORAGE_STATE = path.join(__dirname, "e2e", ".auth", "app-state.jso
 
 export default defineConfig({
   testDir: "./e2e",
-  testMatch: ["**/visual.spec.ts"],
+  testMatch: ["**/visual.spec.ts", "**/score-verify.spec.ts"],
   timeout: 90000,
   retries: 0,
 

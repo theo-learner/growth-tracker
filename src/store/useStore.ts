@@ -18,9 +18,9 @@ import {
   generateSampleWeeklyReport,
   generateSampleRecommendations,
   generateSampleProducts,
-  generateSampleMonthlyData,
   generateSampleMilestones,
 } from "@/lib/sample-data";
+import { computeMonthlyData } from "@/lib/score-engine";
 
 interface AppState {
   // 온보딩 상태
@@ -62,6 +62,7 @@ interface AppState {
   switchChild: (childId: string) => void;
   removeChild: (childId: string) => void;
   
+  recalculateMonthlyData: () => void;
   resetAll: () => void;
 }
 
@@ -121,12 +122,12 @@ export const useStore = create<AppState>()(
           weeklyReport: generateSampleWeeklyReport(name),
           recommendations: generateSampleRecommendations(name),
           products: generateSampleProducts(),
-          monthlyData: generateSampleMonthlyData(),
+          monthlyData: child ? computeMonthlyData(sampleActivities, child) : [],
           milestones: generateSampleMilestones(),
         });
       },
 
-      // 활동 기록 추가
+      // 활동 기록 추가 → 월간 점수 즉시 재계산
       addActivity: (activity) =>
         set((state) => {
           const newActivities = [activity, ...state.activities];
@@ -134,7 +135,10 @@ export const useStore = create<AppState>()(
           if (state.activeChildId) {
             newAllActivities[state.activeChildId] = newActivities;
           }
-          return { activities: newActivities, allActivities: newAllActivities };
+          const monthlyData = state.child
+            ? computeMonthlyData(newActivities, state.child)
+            : state.monthlyData;
+          return { activities: newActivities, allActivities: newAllActivities, monthlyData };
         }),
 
       // 활동 기록 수정
@@ -145,7 +149,7 @@ export const useStore = create<AppState>()(
           ),
         })),
 
-      // 활동 기록 삭제
+      // 활동 기록 삭제 → 월간 점수 즉시 재계산
       deleteActivity: (id) =>
         set((state) => {
           const newActivities = state.activities.filter((act) => act.id !== id);
@@ -153,7 +157,10 @@ export const useStore = create<AppState>()(
           if (state.activeChildId) {
             newAllActivities[state.activeChildId] = newActivities;
           }
-          return { activities: newActivities, allActivities: newAllActivities };
+          const monthlyData = state.child
+            ? computeMonthlyData(newActivities, state.child)
+            : state.monthlyData;
+          return { activities: newActivities, allActivities: newAllActivities, monthlyData };
         }),
 
       // 다자녀 관리: 아이 추가
@@ -212,6 +219,13 @@ export const useStore = create<AppState>()(
             allActivities: newAllActivities,
             onboardingComplete: newChildren.length > 0,
           };
+        }),
+
+      // 월간 점수 수동 재계산 (앱 첫 로드 시 기존 사용자 데이터 갱신용)
+      recalculateMonthlyData: () =>
+        set((state) => {
+          if (!state.child) return state;
+          return { monthlyData: computeMonthlyData(state.activities, state.child) };
         }),
 
       // 전체 초기화

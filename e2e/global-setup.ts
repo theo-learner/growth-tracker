@@ -20,7 +20,7 @@ export default async function globalSetup() {
   const page = await context.newPage();
 
   console.log("\n[setup] 온보딩 완료 중...");
-  await page.goto("http://localhost:3000");
+  await page.goto("http://localhost:3001");
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -29,26 +29,26 @@ export default async function globalSetup() {
   await page.fill("input#child-nickname", "지우");
 
   // 나이 선택 (만 5세)
-  await page.click('button:has-text("만 5세")');
+  await page.click('button:has-text("만 5세")', { force: true });
 
   // 성별 선택 (여아)
-  await page.click('button:has-text("여아")');
+  await page.click('button:has-text("여아")', { force: true });
 
   // 다음으로
-  await page.click('button:has-text("다음으로")');
+  await page.click('button:has-text("다음으로")', { force: true });
 
   // ─── Step 2: 기질 파악 ───────────────────────────────────────
   await page.waitForSelector("text=어떤 아이인가요", { timeout: 10000 });
 
   // Q1: 새로운 환경 (단일 선택)
-  await page.click('button:has-text("낯선 곳도 씩씩하게")');
+  await page.click('button:has-text("낯선 곳도 씩씩하게")', { force: true });
 
   // 다음으로
-  await page.click('button:has-text("다음으로")');
+  await page.click('button:has-text("다음으로")', { force: true });
 
   // ─── Step 3: 검사 결과 건너뛰기 ─────────────────────────────
   await page.waitForSelector('button:has-text("안 했어요")', { timeout: 10000 });
-  await page.click('button:has-text("안 했어요")');
+  await page.click('button:has-text("안 했어요")', { force: true });
 
   // 메인 앱 로드 대기
   await page.waitForSelector("text=성장 트래커", { timeout: 15000 });
