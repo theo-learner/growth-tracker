@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { generateCoupangLink } from "@/lib/affiliate";
+import { callLLM } from "@/lib/llm-client";
 
 /**
  * POST /api/recommend — 맞춤 추천 (Claude API, fallback: 프리셋)
@@ -63,24 +64,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { childProfile, weeklyReport } = body;
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-
-    if (apiKey) {
-      try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-          },
-          body: JSON.stringify({
-            model: "claude-3-5-sonnet-20240620",
-            max_tokens: 1024,
-            messages: [
-              {
-                role: "user",
-                content: `당신은 아동 발달 전문가입니다. 아래 아이 정보와 주간 리포트를 보고 맞춤 추천을 생성하세요.
+    const prompt = `당신은 아동 발달 전문가입니다. 아래 아이 정보와 주간 리포트를 보고 맞춤 추천을 생성하세요.
 
 아이 정보: ${JSON.stringify(childProfile)}
 주간 리포트: ${JSON.stringify(weeklyReport)}
@@ -90,33 +74,26 @@ export async function POST(request: NextRequest) {
   "activities": [{"title": "...", "description": "...", "reason": "...", "domains": [...], "duration": "...", "icon": "emoji"}],
   "products": [{"name": "...", "price": "1만원대", "reason": "...", "icon": "emoji"}]
 }
-*주의*: products의 link 필드는 생성하지 마세요. (서버에서 생성함)`,
-              },
-            ],
-          }),
-        });
+*주의*: products의 link 필드는 생성하지 마세요. (서버에서 생성함)`;
 
-        if (response.ok) {
-          const data = await response.json();
-          const text = data.content?.[0]?.text;
-          if (text) {
-            const parsed = JSON.parse(text);
-            
-            // 링크 동적 생성 주입
-            if (parsed.products && Array.isArray(parsed.products)) {
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              parsed.products = parsed.products.map((p: any) => ({
-                ...p,
-                link: generateCoupangLink(p.name),
-              }));
-            }
-            
-            return NextResponse.json(parsed);
-          }
+    try {
+      const text = await callLLM(prompt, "claude-3-5-sonnet-20240620");
+      if (text) {
+        const parsed = JSON.parse(text);
+
+        // 링크 동적 생성 주입
+        if (parsed.products && Array.isArray(parsed.products)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          parsed.products = parsed.products.map((p: any) => ({
+            ...p,
+            link: generateCoupangLink(p.name),
+          }));
         }
-      } catch {
-        // AI recommend failed, using preset fallback
+
+        return NextResponse.json(parsed);
       }
+    } catch {
+      // AI recommend failed, using preset fallback
     }
 
     return NextResponse.json(PRESET_RECOMMENDATIONS);

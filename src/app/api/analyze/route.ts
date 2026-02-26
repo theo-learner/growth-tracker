@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { calculateMonths, getKDSTChecklist } from "@/data/k-dst";
+import { callLLM } from "@/lib/llm-client";
 
 /**
  * POST /api/analyze — 기록 기반 발달 분석 (K-DST 기준 적용)
@@ -58,30 +59,11 @@ ${checklist.tasks.map((t) => `- ${t.domain}: ${t.question}`).join("\n")}
       }
     }
 
-    // Claude API 키가 환경변수에 있으면 AI 분석 시도
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-
-    if (apiKey) {
-      try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-          },
-          body: JSON.stringify({
-            model: "claude-3-haiku-20240307",
-            max_tokens: 1024,
-            messages: [
-              {
-                role: "user",
-                content: `당신은 아동 발달 전문가입니다. 아래 기록을 분석하여 인사이트를 생성하세요.
+    const prompt = `당신은 아동 발달 전문가입니다. 아래 기록을 분석하여 인사이트를 생성하세요.
 
 아이 정보: ${JSON.stringify(childProfile)}
 오늘 기록: ${JSON.stringify(activities)}
 ${kdstContext}
-
 규칙:
 1. 전문 용어 사용 ❌ → 엄마가 이해하는 쉬운 말로
 2. 긍정적 톤 우선
@@ -93,24 +75,16 @@ JSON 형식으로 응답:
   "insights": [{"type": "progress|observation|encouragement", "icon": "emoji", "message": "...", "domain": "..."}],
   "todayTip": "...",
   "domainScores": {"language": N, "visuospatial": N, "workingMemory": N, "processingSpeed": N, "logic": N, "fineMotor": N}
-}`,
-              },
-            ],
-          }),
-        });
+}`;
 
-        if (response.ok) {
-          const data = await response.json();
-          const text = data.content?.[0]?.text;
-          if (text) {
-            const parsed = JSON.parse(text);
-            return NextResponse.json(parsed);
-          }
-        }
-      } catch {
-        // AI 분석 실패 시 프리셋으로 fallback
-        // AI analyze failed, using preset fallback
+    try {
+      const text = await callLLM(prompt, "claude-3-haiku-20240307");
+      if (text) {
+        const parsed = JSON.parse(text);
+        return NextResponse.json(parsed);
       }
+    } catch {
+      // AI analyze failed, using preset fallback
     }
 
     // 프리셋 fallback
