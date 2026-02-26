@@ -7,5 +7,9 @@
 
 | ID | Time | T | Title | Read |
 |----|------|---|-------|------|
+| #2764 | 11:50 PM | ✅ | Refactored Step2Temperament to K-DST radio card style | ~624 |
+| #2763 | 11:49 PM | 🔄 | Redesigned Step1ChildInfo with K-DST card-style radio patterns | ~483 |
+| #2761 | 11:47 PM | 🔵 | Examined temperament assessment onboarding step | ~530 |
+| #2760 | " | 🔵 | Step1ChildInfo onboarding component uses Stitch patterns | ~411 |
 | #2678 | 10:31 PM | 🔵 | Reviewed three-step onboarding flow implementation | ~371 |
 </claude-mem-context>
