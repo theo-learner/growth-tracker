@@ -18,6 +18,15 @@ interface RadarChartProps {
  * 6영역 레이더 차트 v2 — 통일된 컬러 팔레트 + 부드러운 그라데이션
  */
 export default function RadarChart({ scores, prevScores }: RadarChartProps) {
+  // 데이터 유효성 검증
+  if (!scores || !prevScores) {
+    return (
+      <div className="flex items-center justify-center h-[280px]">
+        <p className="text-sm text-mid-gray">데이터가 없습니다</p>
+      </div>
+    );
+  }
+
   const domains: DomainKey[] = [
     "verbalComprehension", "visualSpatial", "fluidReasoning",
     "workingMemory", "processingSpeed",
@@ -25,8 +34,8 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
 
   const data = domains.map((key) => ({
     domain: DOMAIN_LABELS[key],
-    current: scores[key],
-    previous: prevScores[key],
+    current: scores[key] || 0,
+    previous: prevScores[key] || 0,
     fullMark: 100,
   }));
 

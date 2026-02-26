@@ -16,18 +16,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // ─── Primary — 자연스러운 소프트 그린 ───
+        // ─── Primary — 자연스러운 소프트 그린 (WCAG AA 준수) ───
         "soft-green": {
-          DEFAULT: "#5CB87A",
+          DEFAULT: "#2A7A42", // 개선: 4.5:1 대비율 확보 (흰색 배경)
           50: "#F0FDF4",
           100: "#DCFCE7",
           200: "#BBF7D0",
           300: "#86EFAC",
           400: "#5CB87A",
-          500: "#4CAF6E",
+          500: "#3D9B5C",
           600: "#38A55B",
           700: "#2D8A4A",
-          800: "#1E6B37",
+          800: "#2A7A42", // 기본값을 800 기반으로
           900: "#14532D",
         },
 
@@ -82,9 +82,9 @@ const config: Config = {
           "processingSpeed-bg": "#FDF0F2",
         },
 
-        // ─── Neutral — 텍스트/구분선 ───
+        // ─── Neutral — 텍스트/구분선 (WCAG AA 준수) ───
         "dark-gray": "#2C2C2C",
-        "mid-gray": "#8C8C8C",
+        "mid-gray": "#5A5A5A", // 개선: #8C8C8C → #5A5A5A (4.5:1 대비율 확보)
         "light-gray": "#E8E4DE",
       },
 

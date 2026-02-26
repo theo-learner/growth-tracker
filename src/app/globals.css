@@ -143,6 +143,9 @@ input, textarea, button, select {
     @apply opacity-40 cursor-not-allowed shadow-none;
     filter: grayscale(0.3);
   }
+  .btn-primary:focus-visible {
+    @apply outline-none ring-2 ring-soft-green ring-offset-2;
+  }
   /* 글래스 하이라이트 오버레이 */
   .btn-primary::after {
     content: '';
@@ -161,6 +164,9 @@ input, textarea, button, select {
            hover:shadow-card
            active:scale-[0.97]
            transition-all duration-200;
+  }
+  .btn-secondary:focus-visible {
+    @apply outline-none ring-2 ring-soft-green ring-offset-2;
   }
 
   /* Ghost 버튼 */
@@ -185,6 +191,9 @@ input, textarea, button, select {
            hover:border-soft-green/40 hover:shadow-card
            active:scale-[0.96]
            transition-all duration-200;
+  }
+  .chip:focus-visible {
+    @apply outline-none ring-2 ring-soft-green ring-offset-2;
   }
   .chip-selected {
     @apply text-white border-transparent
@@ -303,7 +312,9 @@ input, textarea, button, select {
            transition-all duration-300;
   }
   .step-label-active {
-    @apply text-soft-green-600;
+    /* WCAG AA: active step label is small text (10px) on warm beige.
+       Use a darker green to meet contrast thresholds. */
+    @apply text-soft-green-900;
   }
   .step-label-done {
     @apply text-soft-green;

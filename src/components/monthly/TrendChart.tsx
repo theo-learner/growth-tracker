@@ -20,6 +20,15 @@ interface TrendChartProps {
  * 영역별 꺾은선 그래프 — 실제 데이터 + 3개월 예측 점선
  */
 export default function TrendChart({ data, domain }: TrendChartProps) {
+  // 데이터 유효성 검증
+  if (!data || data.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-40">
+        <p className="text-sm text-mid-gray">데이터가 없습니다</p>
+      </div>
+    );
+  }
+
   // 실제 데이터와 예측 데이터 분리
   const chartData = data.map((d) => ({
     month: d.month,
@@ -29,8 +38,9 @@ export default function TrendChart({ data, domain }: TrendChartProps) {
   }));
 
   // 예측 시작점을 연결하기 위해 마지막 실제 데이터를 예측에도 포함
-  const lastActualIdx = data.findIndex((d) => d.predicted) - 1;
-  if (lastActualIdx >= 0 && chartData[lastActualIdx]) {
+  const firstPredictedIdx = data.findIndex((d) => d.predicted);
+  const lastActualIdx = firstPredictedIdx > 0 ? firstPredictedIdx - 1 : -1;
+  if (lastActualIdx >= 0 && lastActualIdx < chartData.length && chartData[lastActualIdx]) {
     chartData[lastActualIdx].predicted = chartData[lastActualIdx].value;
   }
 

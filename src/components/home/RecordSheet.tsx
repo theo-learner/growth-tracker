@@ -68,29 +68,59 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
     let record: ActivityRecord;
 
     switch (type) {
-      case "activity":
+      case "activity": {
         if (!category) return;
-        record = { id, type, timestamp, data: { category, durationMin: parseInt(duration) || 0, detail: note } };
+        // duration 검증: 양수이며 합리적인 범위 (0~600분 = 10시간)
+        const durationNum = parseInt(duration) || 0;
+        if (durationNum < 0 || durationNum > 600) {
+          alert("소요 시간은 0~600분 사이로 입력해주세요.");
+          return;
+        }
+        record = { id, type, timestamp, data: { category, durationMin: durationNum, detail: note } };
         break;
+      }
       case "question":
         if (!quote.trim()) return;
+        // 최대 길이 검증
+        if (quote.trim().length > 500) {
+          alert("질문은 500자 이내로 입력해주세요.");
+          return;
+        }
         record = { id, type, timestamp, data: { quote: quote.trim(), context: context.trim() || undefined } };
         break;
-      case "reading":
+      case "reading": {
         if (!bookTitle.trim()) return;
+        if (bookTitle.trim().length > 200) {
+          alert("책 제목은 200자 이내로 입력해주세요.");
+          return;
+        }
+        const readDuration = duration ? parseInt(duration) : undefined;
+        if (readDuration !== undefined && (readDuration < 0 || readDuration > 600)) {
+          alert("읽은 시간은 0~600분 사이로 입력해주세요.");
+          return;
+        }
         record = {
           id, type, timestamp,
-          data: { bookTitle: bookTitle.trim(), readAlone, durationMin: parseInt(duration) || undefined },
+          data: { bookTitle: bookTitle.trim(), readAlone, durationMin: readDuration },
         };
         break;
+      }
       case "emotion":
         if (!selectedEmotion) return;
+        if (note.trim().length > 200) {
+          alert("메모는 200자 이내로 입력해주세요.");
+          return;
+        }
         record = {
           id, type, timestamp,
           data: { emoji: selectedEmotion.emoji, label: selectedEmotion.label, note: note.trim() || undefined },
         };
         break;
       case "photo":
+        if (note.trim().length > 200) {
+          alert("메모는 200자 이내로 입력해주세요.");
+          return;
+        }
         record = {
           id, type, timestamp,
           data: { 
@@ -119,18 +149,30 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
   return (
     <>
       {/* 백드롭 — 블러 효과 */}
-      <div className="bottom-sheet-backdrop" onClick={onClose} />
+      <div 
+        className="bottom-sheet-backdrop" 
+        onClick={onClose}
+        role="presentation"
+        aria-hidden="true"
+      />
 
       {/* 바텀시트 — 프리미엄 라운드 */}
-      <div className="bottom-sheet">
+      <div className="bottom-sheet" role="dialog" aria-modal="true" aria-labelledby="record-sheet-title">
         {/* 핸들 */}
         <div className="bottom-sheet-handle" />
 
         <div className="px-5 pb-8 max-h-[70vh] overflow-y-auto">
           {/* 헤더 */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold">{titles[type]}</h3>
-            <button onClick={onClose} className="text-mid-gray text-xl">✕</button>
+            <h3 id="record-sheet-title" className="text-lg font-bold">{titles[type]}</h3>
+            <button 
+              onClick={onClose} 
+              className="text-mid-gray text-xl hover:text-dark-gray transition-colors"
+              aria-label="닫기"
+              type="button"
+            >
+              ✕
+            </button>
           </div>
 
           {/* 타입별 폼 */}

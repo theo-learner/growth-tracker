@@ -56,16 +56,19 @@ export default function Step1ChildInfo() {
 
       {/* 아이 이름/닉네임 */}
       <div className="mb-6">
-        <label className="block text-sm font-semibold text-dark-gray mb-2">
+        <label htmlFor="child-nickname" className="block text-sm font-semibold text-dark-gray mb-2">
           아이 이름 (닉네임)
         </label>
         <input
+          id="child-nickname"
           type="text"
           value={nickname}
           onChange={(e) => setNickname(e.target.value)}
           placeholder="예: 유나"
           className="input-field"
           maxLength={10}
+          aria-label="아이 이름 또는 닉네임 입력"
+          required
         />
         {nickname.trim() && (
           <p className="text-xs text-soft-green mt-1.5 animate-fade-in">

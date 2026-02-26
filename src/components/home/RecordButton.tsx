@@ -14,9 +14,11 @@ export default function RecordButton({ icon, label, onClick }: RecordButtonProps
     <button
       onClick={onClick}
       className="record-btn group"
+      aria-label={`${label} 기록하기`}
+      type="button"
     >
       {/* 아이콘 — 호버/터치시 살짝 스케일 */}
-      <span className="text-2xl record-btn-icon group-hover:scale-110 transition-transform duration-200">
+      <span className="text-2xl record-btn-icon group-hover:scale-110 transition-transform duration-200" aria-hidden="true">
         {icon}
       </span>
       {/* 라벨 — 가운데 정렬, 읽기 쉬운 크기 */}
