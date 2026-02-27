@@ -67,12 +67,14 @@ const DOMAIN_CONTEXT: Record<DomainKey, { explanation: string; freePlayIdeas: Fr
 };
 
 /** 주간 리포트에서 가장 집중이 필요한 영역 반환 */
-export function getFocusArea(report: WeeklyReport): FocusArea {
+export function getFocusArea(report: WeeklyReport): FocusArea | null {
   const entries = Object.entries(report.scores) as [DomainKey, number][];
+  if (entries.length === 0) return null;
   const [lowestDomain, lowestScore] = entries.reduce(
     (min, curr) => (curr[1] < min[1] ? curr : min)
   );
   const context = DOMAIN_CONTEXT[lowestDomain];
+  if (!context) return null;
   return {
     domain: lowestDomain,
     label: DOMAIN_LABELS[lowestDomain],
