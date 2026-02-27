@@ -21,6 +21,12 @@ const ACTIVITY_CATEGORIES = [
   { value: "기타", emoji: "📝" },
 ];
 
+/** 카테고리별 난이도 입력 설정 */
+const DIFFICULTY_OPTIONS: Record<string, { label: string; unit: string; presets: number[] }> = {
+  "퍼즐": { label: "퍼즐 조각 수", unit: "조각", presets: [36, 72, 108, 180] },
+  "블록": { label: "블록 층 수",   unit: "층",   presets: [5, 10, 20] },
+};
+
 const EMOTION_OPTIONS = [
   { emoji: "😊", label: "행복" },
   { emoji: "😐", label: "보통" },
@@ -46,6 +52,8 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
   // 활동 기록용
   const [category, setCategory] = useState("");
   const [duration, setDuration] = useState("");
+  const [difficultyLevel, setDifficultyLevel] = useState<number | null>(null);
+  const [difficultyInput, setDifficultyInput] = useState("");
   // 독서 기록용
   const [bookTitle, setBookTitle] = useState("");
   const [readAlone, setReadAlone] = useState(false);
@@ -82,7 +90,20 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
           alert("소요 시간은 0~600분 사이로 입력해주세요.");
           return;
         }
-        record = { id, type, timestamp, data: { category, durationMin: durationNum, detail: note } };
+        const diffOpts = DIFFICULTY_OPTIONS[category];
+        const resolvedDifficulty =
+          difficultyLevel ??
+          (difficultyInput ? parseInt(difficultyInput) || undefined : undefined);
+        record = {
+          id, type, timestamp,
+          data: {
+            category,
+            durationMin: durationNum,
+            detail: note || undefined,
+            difficultyLevel: resolvedDifficulty,
+            difficultyUnit: resolvedDifficulty ? diffOpts?.unit : undefined,
+          },
+        };
         break;
       }
       case "question":
@@ -254,7 +275,11 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   {ACTIVITY_CATEGORIES.map((cat) => (
                     <button
                       key={cat.value}
-                      onClick={() => setCategory(cat.value)}
+                      onClick={() => {
+                        setCategory(cat.value);
+                        setDifficultyLevel(null);
+                        setDifficultyInput("");
+                      }}
                       className={`py-3 rounded-xl text-center text-sm font-medium transition-all
                         ${category === cat.value
                           ? "bg-primary text-white shadow-stitch-btn"
@@ -267,6 +292,47 @@ export default function RecordSheet({ type, onClose }: RecordSheetProps) {
                   ))}
                 </div>
               </div>
+              {/* 카테고리별 난이도 입력 (퍼즐: 조각 수, 블록: 층 수) */}
+              {category && DIFFICULTY_OPTIONS[category] && (
+                <div>
+                  <p className="text-sm font-semibold mb-2">
+                    {DIFFICULTY_OPTIONS[category].label}
+                    <span className="text-xs font-normal text-mid-gray ml-1">(선택)</span>
+                  </p>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    {DIFFICULTY_OPTIONS[category].presets.map((preset) => (
+                      <button
+                        key={preset}
+                        type="button"
+                        onClick={() => {
+                          setDifficultyLevel(difficultyLevel === preset ? null : preset);
+                          setDifficultyInput("");
+                        }}
+                        className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition-colors ${
+                          difficultyLevel === preset
+                            ? "bg-primary text-white border-primary"
+                            : "bg-white text-slate-600 border-slate-200 hover:border-primary"
+                        }`}
+                      >
+                        {preset}{DIFFICULTY_OPTIONS[category].unit}
+                      </button>
+                    ))}
+                    <input
+                      type="number"
+                      min={1}
+                      value={difficultyInput}
+                      onChange={(e) => {
+                        setDifficultyInput(e.target.value);
+                        setDifficultyLevel(null);
+                      }}
+                      placeholder="직접입력"
+                      className="w-24 px-3 py-1.5 rounded-full border border-slate-200 text-sm text-center
+                                 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                    />
+                  </div>
+                </div>
+              )}
+
               <div>
                 <p className="text-sm font-semibold mb-2">소요 시간 (분)</p>
                 <input

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { calculateMonths, getKDSTChecklist } from "@/data/k-dst";
 import { callLLM } from "@/lib/llm-client";
+import { summarizeActivities, summaryToText } from "@/lib/activity-summary";
 
 /**
  * POST /api/analyze — 기록 기반 발달 분석 (K-DST 기준 적용)
@@ -38,10 +39,58 @@ const PRESET_RESPONSE = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function buildContextBlock(childProfile: any, temperament: any, weeklyReport: any, recentActivities: any[]): string {
+  let ctx = "";
+
+  if (temperament) {
+    const envMap: Record<string, string> = {
+      bold: "새로운 환경에 거리낌 없이 뛰어드는 편",
+      adaptive: "조금 살펴보다 적응하는 편",
+      inhibited: "새로운 환경에 신중한 편",
+    };
+    ctx += `\n[아이 기질]\n`;
+    ctx += `새로운 환경: ${envMap[temperament.newEnvironment] ?? temperament.newEnvironment}\n`;
+    if (temperament.fasterThanPeers?.length > 0) {
+      ctx += `또래보다 앞선 영역: ${temperament.fasterThanPeers.join(", ")}\n`;
+    }
+    if (temperament.currentObsession?.length > 0) {
+      ctx += `현재 관심사: ${temperament.currentObsession.join(", ")}\n`;
+    }
+  }
+
+  if (weeklyReport?.scores) {
+    ctx += `\n[이번 주 발달 점수 (40~100점 척도)]\n`;
+    const domainLabels: Record<string, string> = {
+      verbalComprehension: "언어이해",
+      visualSpatial: "시공간",
+      fluidReasoning: "유동추론",
+      workingMemory: "작업기억",
+      processingSpeed: "처리속도",
+    };
+    for (const [k, v] of Object.entries(weeklyReport.scores)) {
+      const prev = weeklyReport.prevScores?.[k] ?? v;
+      const diff = (v as number) - (prev as number);
+      const label = domainLabels[k] ?? k;
+      ctx += `${label}: ${v}점 (${diff >= 0 ? "+" : ""}${diff})\n`;
+    }
+  }
+
+  if (recentActivities?.length > 0) {
+    const summary = summarizeActivities(recentActivities, 7);
+    const summaryText = summaryToText(summary);
+    if (summaryText) {
+      ctx += `\n[최근 7일 활동 요약]\n${summaryText}\n`;
+    }
+  }
+
+  return ctx;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { activities, childProfile } = body;
+    const { activities, childProfile, temperament, weeklyReport, recentActivities } = body;
 
     // 월령 계산 및 K-DST 기준 가져오기
     let kdstContext = "";
@@ -59,9 +108,12 @@ ${checklist.tasks.map((t) => `- ${t.domain}: ${t.question}`).join("\n")}
       }
     }
 
+    const contextBlock = buildContextBlock(childProfile, temperament, weeklyReport, recentActivities ?? []);
+
     const prompt = `당신은 아동 발달 전문가입니다. 아래 기록을 분석하여 인사이트를 생성하세요.
 
-아이 정보: ${JSON.stringify(childProfile)}
+아이 정보: 이름 ${childProfile.nickname}, 만 ${childProfile.age}세
+${contextBlock}
 오늘 기록: ${JSON.stringify(activities)}
 ${kdstContext}
 규칙:
@@ -69,6 +121,7 @@ ${kdstContext}
 2. 긍정적 톤 우선
 3. K-DST 기준에 비추어 잘 성장하고 있는지 언급 (가능한 경우)
 4. 점수는 상대적 추정치로 제공
+5. 기질 특성과 관심사를 반영한 개인화된 코멘트 포함
 
 JSON 형식으로 응답:
 {

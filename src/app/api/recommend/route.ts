@@ -62,12 +62,51 @@ const PRESET_RECOMMENDATIONS = {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { childProfile, weeklyReport } = body;
+    const { childProfile, weeklyReport, temperament, monthlyData } = body;
+
+    // 기질 맥락 블록
+    let temperamentCtx = "";
+    if (temperament) {
+      const envMap: Record<string, string> = {
+        bold: "새로운 것에 거리낌 없이 뛰어드는 편",
+        adaptive: "살펴보다 적응하는 편",
+        inhibited: "신중한 편",
+      };
+      temperamentCtx = `
+[아이 기질]
+새로운 환경: ${envMap[temperament.newEnvironment] ?? temperament.newEnvironment}
+${temperament.fasterThanPeers?.length > 0 ? `또래보다 앞선 영역: ${temperament.fasterThanPeers.join(", ")}` : ""}
+${temperament.currentObsession?.length > 0 ? `현재 관심사: ${temperament.currentObsession.join(", ")}` : ""}
+`;
+    }
+
+    // 월간 추이 블록 (최근 3개월)
+    let trendCtx = "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if (monthlyData && Array.isArray(monthlyData) && monthlyData.length >= 2) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const recent = (monthlyData as any[]).slice(-3).filter((m) => !m.predicted);
+      if (recent.length >= 2) {
+        const domainLabels: Record<string, string> = {
+          verbalComprehension: "언어이해",
+          visualSpatial: "시공간",
+          fluidReasoning: "유동추론",
+          workingMemory: "작업기억",
+          processingSpeed: "처리속도",
+        };
+        trendCtx = `\n[최근 발달 추이]\n`;
+        trendCtx += recent.map((m) =>
+          `${m.month}: ${Object.entries(m.scores ?? {}).map(([k, v]) => `${domainLabels[k] ?? k}=${v}`).join(", ")}`
+        ).join("\n") + "\n";
+      }
+    }
 
     const prompt = `당신은 아동 발달 전문가입니다. 아래 아이 정보와 주간 리포트를 보고 맞춤 추천을 생성하세요.
 
-아이 정보: ${JSON.stringify(childProfile)}
+아이 정보: 이름 ${childProfile.nickname}, 만 ${childProfile.age}세
+${temperamentCtx}
 주간 리포트: ${JSON.stringify(weeklyReport)}
+${trendCtx}
 
 추천 활동 3개와 추천 교구 3개를 JSON으로 응답:
 {

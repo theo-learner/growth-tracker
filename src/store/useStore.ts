@@ -148,11 +148,16 @@ export const useStore = create<AppState>()(
 
       // 활동 기록 수정
       updateActivity: (id, updates) =>
-        set((state) => ({
-          activities: state.activities.map((act) =>
+        set((state) => {
+          const newActivities = state.activities.map((act) =>
             act.id === id ? { ...act, ...updates } : act
-          ),
-        })),
+          );
+          const newAllActivities = { ...state.allActivities };
+          if (state.activeChildId) {
+            newAllActivities[state.activeChildId] = newActivities;
+          }
+          return { activities: newActivities, allActivities: newAllActivities };
+        }),
 
       // 활동 기록 삭제 → 월간 점수 즉시 재계산
       deleteActivity: (id) =>

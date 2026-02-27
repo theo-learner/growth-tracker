@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ActivityRecord, ActivityData, QuestionData, ReadingData, EmotionData, PhotoData } from "@/types";
 import { useStore } from "@/store/useStore";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { callApi } from "@/lib/api-client";
 
 /**
  * 오늘 기록 타임라인 — Stitch 카드 스타일
@@ -32,10 +33,68 @@ export default function Timeline({ activities }: { activities: ActivityRecord[] 
   );
 }
 
+/** 동일 카테고리 이전 기록과 비교 정보를 계산한다 */
+function usePreviousComparison(activity: ActivityRecord) {
+  const allActivities = useStore((s) => s.activities);
+  if (activity.type !== "activity") return null;
+
+  const current = activity.data as ActivityData;
+  if (!current.difficultyLevel) return null;
+
+  // 현재 기록 이전의 같은 카테고리 기록 중 difficultyLevel이 있는 가장 최근 것
+  const currentIdx = allActivities.findIndex((a) => a.id === activity.id);
+  if (currentIdx === -1) return null;
+
+  const prev = allActivities
+    .slice(currentIdx + 1)
+    .find(
+      (a) =>
+        a.type === "activity" &&
+        (a.data as ActivityData).category === current.category &&
+        (a.data as ActivityData).difficultyLevel != null
+    );
+
+  if (!prev) return null;
+  const prevData = prev.data as ActivityData;
+
+  return {
+    diffDifficulty: current.difficultyLevel - (prevData.difficultyLevel ?? 0),
+    diffDuration: current.durationMin - prevData.durationMin,
+    unit: current.difficultyUnit ?? "단계",
+  };
+}
+
 function TimelineItem({ activity }: { activity: ActivityRecord }) {
   const [showMenu, setShowMenu] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const deleteActivity = useStore((s) => s.deleteActivity);
+  const updateActivity = useStore((s) => s.updateActivity);
+  const child = useStore((s) => s.child);
+  const comparison = usePreviousComparison(activity);
+
+  const handleAnalyzePhoto = async () => {
+    const photoData = activity.data as PhotoData;
+    if (!photoData.imageData) return;
+    setAnalyzing(true);
+    try {
+      const result = await callApi("/api/analyze-photo", {
+        method: "POST",
+        body: JSON.stringify({
+          imageData: photoData.imageData,
+          note: photoData.note,
+          childProfile: child,
+        }),
+      });
+      updateActivity(activity.id, {
+        data: { ...photoData, aiAnalysis: result.analysis },
+      });
+    } catch {
+      // 분석 실패 시 무시
+    } finally {
+      setAnalyzing(false);
+    }
+  };
 
   const time = new Date(activity.timestamp).toLocaleTimeString("ko-KR", {
     hour: "2-digit",
@@ -79,6 +138,63 @@ function TimelineItem({ activity }: { activity: ActivityRecord }) {
           />
         )}
         <p className="text-sm text-slate-700 leading-relaxed">{text}</p>
+        {/* 사진 AI 분석 결과 */}
+        {photoData?.aiAnalysis && (
+          <div className="mt-2 bg-primary-50 border border-primary-100 rounded-lg p-3">
+            <div className="flex items-center gap-1.5 mb-1">
+              <MaterialIcon name="auto_awesome" size={12} className="text-primary-600" />
+              <span className="text-[10px] font-bold text-primary-600">AI 분석</span>
+            </div>
+            <p className="text-xs text-slate-700 leading-relaxed">{photoData.aiAnalysis}</p>
+          </div>
+        )}
+        {/* AI 분석 버튼 (사진 있고 분석 결과 없을 때만) */}
+        {photoData?.imageData && !photoData?.aiAnalysis && (
+          <button
+            onClick={handleAnalyzePhoto}
+            disabled={analyzing}
+            className="mt-2 flex items-center gap-1.5 px-3 py-1.5
+                       bg-primary-50 border border-primary-100 rounded-lg
+                       text-xs font-semibold text-primary-600
+                       hover:bg-primary-100 transition-colors
+                       disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <MaterialIcon name="auto_awesome" size={13} />
+            {analyzing ? "분석 중..." : "AI 분석하기"}
+          </button>
+        )}
+        {/* 이전 기록 대비 성장 표시 */}
+        {comparison && (
+          <div className="flex items-center gap-2 mt-1">
+            {comparison.diffDifficulty !== 0 && (
+              <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${
+                comparison.diffDifficulty > 0
+                  ? "bg-primary-50 text-primary-700"
+                  : "bg-rose-50 text-rose-600"
+              }`}>
+                <MaterialIcon
+                  name={comparison.diffDifficulty > 0 ? "trending_up" : "trending_down"}
+                  size={11}
+                />
+                {comparison.diffDifficulty > 0 ? "+" : ""}{comparison.diffDifficulty}{comparison.unit}
+              </span>
+            )}
+            {comparison.diffDuration !== 0 && (
+              <span className={`inline-flex items-center gap-0.5 text-[11px] font-semibold px-1.5 py-0.5 rounded-full ${
+                comparison.diffDuration < 0
+                  ? "bg-primary-50 text-primary-700"
+                  : "bg-amber-50 text-amber-700"
+              }`}>
+                <MaterialIcon
+                  name={comparison.diffDuration < 0 ? "speed" : "hourglass_top"}
+                  size={11}
+                />
+                {comparison.diffDuration > 0 ? "+" : ""}{comparison.diffDuration}분
+              </span>
+            )}
+            <span className="text-[10px] text-slate-400">지난번 대비</span>
+          </div>
+        )}
         <p className="text-xs text-slate-400 mt-0.5">{time}</p>
       </div>
 
@@ -133,10 +249,13 @@ function getActivityDisplay(activity: ActivityRecord): { iconName: string; iconC
   switch (activity.type) {
     case "activity": {
       const d = activity.data as ActivityData;
+      const diffStr = d.difficultyLevel
+        ? ` · ${d.difficultyLevel}${d.difficultyUnit ?? ""}`
+        : "";
       return {
         iconName: "timer",
         iconClass: "bg-blue-100 text-blue-600",
-        text: `${d.category} — ${d.durationMin}분${d.detail ? ` · ${d.detail}` : ""}`,
+        text: `${d.category}${diffStr} — ${d.durationMin}분${d.detail ? ` · ${d.detail}` : ""}`,
       };
     }
     case "question": {

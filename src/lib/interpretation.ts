@@ -43,6 +43,38 @@ export function interpretScore(score: number): DomainInterpretation {
   };
 }
 
+/** 백분위 → 부모 친화적 발달 구간 해석 */
+export function interpretPercentile(percentile: number): DomainInterpretation {
+  if (percentile >= 70) {
+    return {
+      level: "good",
+      emoji: "✅",
+      message: `또래 상위 ${100 - percentile}%`,
+      bgColor: "bg-primary-50",
+      textColor: "text-primary-700",
+      borderColor: "border-primary-100",
+    };
+  }
+  if (percentile >= 40) {
+    return {
+      level: "normal",
+      emoji: "⚡",
+      message: "또래 중상위권",
+      bgColor: "bg-amber-50",
+      textColor: "text-amber-700",
+      borderColor: "border-amber-100",
+    };
+  }
+  return {
+    level: "attention",
+    emoji: "⚠️",
+    message: "또래 하위권 — 관심 필요",
+    bgColor: "bg-rose-50",
+    textColor: "text-rose-600",
+    borderColor: "border-rose-100",
+  };
+}
+
 /** 전체 점수 맵 → 종합 상태 한줄 */
 export function getOverallSummary(scores: Record<DomainKey, number>): {
   level: InterpretationLevel;

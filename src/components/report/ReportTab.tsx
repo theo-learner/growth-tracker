@@ -4,6 +4,7 @@ import { lazy, Suspense } from "react";
 import { useStore } from "@/store/useStore";
 import { DOMAIN_LABELS, DomainKey } from "@/types";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import { scoreToPercentile, percentileToBand } from "@/lib/score-engine";
 
 const RadarChart = lazy(() => import("./RadarChart"));
 
@@ -12,6 +13,7 @@ const RadarChart = lazy(() => import("./RadarChart"));
  */
 export default function ReportTab() {
   const { child, weeklyReport, activities } = useStore();
+  const childAge = child?.age ?? 5;
   const childName = child?.nickname || "아이";
 
   const hasOnlySampleData = activities.length > 0 && activities.every((a) => a.isSample);
@@ -118,6 +120,8 @@ export default function ReportTab() {
           <div className="bg-white rounded-xl border border-surface-300/60 shadow-stitch-card">
             {(Object.keys(weeklyReport.bands) as DomainKey[]).map((key, i, arr) => {
               const band = weeklyReport.bands[key];
+              const percentile = scoreToPercentile(weeklyReport.scores[key], childAge, key);
+              const bandLabel = percentileToBand(percentile);
               return (
                 <div
                   key={key}
@@ -126,7 +130,7 @@ export default function ReportTab() {
                 >
                   <span className="text-sm font-medium text-dark-gray">{DOMAIN_LABELS[key]}</span>
                   <div className="flex items-center gap-2.5">
-                    <span className="text-sm font-semibold text-dark-gray">{band.band}</span>
+                    <span className="text-sm font-semibold text-dark-gray">{bandLabel}</span>
                     <span className={`inline-flex items-center justify-center w-7 h-7 rounded-full text-xs font-bold ${
                       band.trend === "up"
                         ? "bg-primary-50 text-primary-600"

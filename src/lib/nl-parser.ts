@@ -192,6 +192,23 @@ function classifySentence(sentence: string): ParsedActivity | null {
   // 우선순위 4: 활동 감지 (CATEGORY_DOMAIN_MAP 키워드 매칭)
   for (const [keyword, category] of Object.entries(ACTIVITY_KEYWORD_MAP)) {
     if (s.includes(keyword)) {
+      // 난이도 정량값 추출 (퍼즐: 조각 수, 블록: 층 수)
+      let difficultyLevel: number | undefined;
+      let difficultyUnit: string | undefined;
+      if (category === "퍼즐") {
+        const pieceMatch = s.match(/(\d+)\s*조각/);
+        if (pieceMatch) {
+          difficultyLevel = parseInt(pieceMatch[1]);
+          difficultyUnit = "조각";
+        }
+      } else if (category === "블록") {
+        const floorMatch = s.match(/(\d+)\s*층/);
+        if (floorMatch) {
+          difficultyLevel = parseInt(floorMatch[1]);
+          difficultyUnit = "층";
+        }
+      }
+
       return {
         type: "activity",
         confidence: 0.9,
@@ -199,6 +216,7 @@ function classifySentence(sentence: string): ParsedActivity | null {
           category,
           durationMin: duration ?? 0,
           detail: s,
+          ...(difficultyLevel != null && { difficultyLevel, difficultyUnit }),
         } satisfies ActivityData,
       };
     }

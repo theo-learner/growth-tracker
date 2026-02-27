@@ -37,7 +37,7 @@ const DOMAIN_LABELS_KO: Record<string, string> = {
  * AI 맞춤 추천 탭 — Stitch 디자인 (성장 대시보드 / 맞춤 추천 활동 및 교구)
  */
 export default function RecommendTab() {
-  const { child, weeklyReport, recommendations: storeRecs, products: storeProds, addActivity } = useStore();
+  const { child, weeklyReport, temperament, monthlyData, recommendations: storeRecs, products: storeProds, addActivity } = useStore();
   const childName = child?.nickname || "아이";
 
   const [recommendations, setRecommendations] = useState<RecommendedActivity[]>(storeRecs);
@@ -62,7 +62,9 @@ export default function RecommendTab() {
         method: "POST",
         body: JSON.stringify({
           childProfile: child,
-          weeklyReport: weeklyReport,
+          weeklyReport,
+          temperament,
+          monthlyData,
         }),
       });
       setRecommendations(data.activities || []);

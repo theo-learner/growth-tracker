@@ -72,8 +72,50 @@ const DEFAULT_CATEGORY_WEIGHTS: Partial<Record<DomainKey, number>> = {
   workingMemory: 1.0,
 };
 
-function getBaseline(age: number): Record<DomainKey, number> {
+export function getBaseline(age: number): Record<DomainKey, number> {
   return AGE_BASELINE[age] ?? AGE_BASELINE[5];
+}
+
+/**
+ * 점수 → 또래 백분위 변환 (piecewise linear)
+ *
+ * 앵커 포인트 (AGE_BASELINE = K-WPPSI 35~45 백분위 근사):
+ *   score = 40          → percentile = 15  (최저 기록)
+ *   score = baseline    → percentile = 40  (기록 없음 기준)
+ *   score = baseline+25 → percentile = 85  (MAX_BONUS 도달)
+ *   score = 100         → percentile = 97  (상한)
+ */
+export function scoreToPercentile(
+  score: number,
+  age: number,
+  domain: DomainKey
+): number {
+  const bl = getBaseline(age)[domain];
+
+  if (score <= 40) return 15;
+  if (score >= 100) return 97;
+
+  if (score <= bl) {
+    // 40 → 15%, baseline → 40%
+    return Math.round(15 + ((score - 40) / (bl - 40)) * (40 - 15));
+  }
+  const maxBoostScore = bl + 25;
+  if (score <= maxBoostScore) {
+    // baseline → 40%, baseline+25 → 85%
+    return Math.round(40 + ((score - bl) / 25) * (85 - 40));
+  }
+  // baseline+25 → 85%, 100 → 97%
+  return Math.round(85 + ((score - maxBoostScore) / (100 - maxBoostScore)) * (97 - 85));
+}
+
+/** 백분위 → 또래 비교 구간 문자열 */
+export function percentileToBand(percentile: number): string {
+  if (percentile >= 90) return "상위 10% 이내";
+  if (percentile >= 75) return "상위 15~25%";
+  if (percentile >= 60) return "상위 25~40%";
+  if (percentile >= 40) return "상위 40~60%";
+  if (percentile >= 25) return "상위 60~75%";
+  return "또래 평균 이하";
 }
 
 function getCategoryWeights(
@@ -126,11 +168,19 @@ function scoreActivity(
     case "activity": {
       const d = record.data as ActivityData;
       const weights = getCategoryWeights(d.category ?? "");
+
+      // 난이도 배율: difficultyLevel이 있으면 적용
+      // 퍼즐 기준: 72조각 = 1.0, 108조각 = 1.5, 180조각 = 2.5 (선형 비례)
+      // 블록 기준: 5층 = 1.0, 10층 = 2.0
+      const difficultyMultiplier = d.difficultyLevel
+        ? Math.max(0.5, Math.min(2.5, d.difficultyLevel / 72))
+        : 1.0;
+
       for (const [domain, w] of Object.entries(weights) as [
         DomainKey,
         number
       ][]) {
-        add(domain, w);
+        add(domain, w * difficultyMultiplier);
       }
       // 퍼즐: 소요 시간에 따른 처리속도 추가 보너스 (30분마다 +1)
       if ((d.category ?? "").includes("퍼즐") && d.durationMin > 0) {

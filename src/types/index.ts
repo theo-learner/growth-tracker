@@ -38,12 +38,17 @@ export interface PhotoData {
   fileName: string;
   note?: string;
   imageData?: string; // Base64 encoded image
+  aiAnalysis?: string; // Claude Vision 분석 결과
 }
 
 export interface ActivityData {
   category: string;
   durationMin: number;
   detail?: string;
+  /** 카테고리별 난이도 정량값 (퍼즐: 조각 수, 블록: 층 수 등) */
+  difficultyLevel?: number;
+  /** 난이도 단위 (퍼즐: "조각", 블록: "층") */
+  difficultyUnit?: string;
 }
 
 export interface QuestionData {

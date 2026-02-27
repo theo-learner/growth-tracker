@@ -12,6 +12,112 @@
  *   LLM_MODEL         — 모델 오버라이드 (없으면 defaultModel 사용)
  *   ANTHROPIC_API_KEY — Anthropic 직접 호출 키
  */
+
+/** 멀티모달 메시지 콘텐츠 블록 */
+export interface ContentBlock {
+  type: "text" | "image";
+  text?: string;
+  source?: {
+    type: "base64";
+    media_type: string;
+    data: string;
+  };
+}
+
+/** 멀티모달(이미지+텍스트) LLM 호출 */
+export async function callLLMMultimodal(
+  content: ContentBlock[],
+  defaultModel: string,
+  maxTokens = 512,
+): Promise<string | null> {
+  const litellmBase = process.env.LITELLM_API_BASE;
+  const anthropicKey = process.env.ANTHROPIC_API_KEY;
+  const model = process.env.LLM_MODEL ?? defaultModel;
+
+  if (litellmBase) {
+    return callOpenAICompatMultimodal(
+      litellmBase,
+      process.env.LITELLM_API_KEY ?? "",
+      model,
+      content,
+      maxTokens,
+    );
+  }
+
+  if (anthropicKey) {
+    return callAnthropicMultimodal(anthropicKey, model, content, maxTokens);
+  }
+
+  return null;
+}
+
+async function callAnthropicMultimodal(
+  apiKey: string,
+  model: string,
+  content: ContentBlock[],
+  maxTokens: number,
+): Promise<string | null> {
+  const anthropicContent = content.map((block) => {
+    if (block.type === "text") {
+      return { type: "text", text: block.text! };
+    }
+    return { type: "image", source: block.source! };
+  });
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: maxTokens,
+      messages: [{ role: "user", content: anthropicContent }],
+    }),
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return (data.content?.[0]?.text as string) ?? null;
+}
+
+async function callOpenAICompatMultimodal(
+  base: string,
+  apiKey: string,
+  model: string,
+  content: ContentBlock[],
+  maxTokens: number,
+): Promise<string | null> {
+  const openAIContent = content.map((block) => {
+    if (block.type === "text") {
+      return { type: "text", text: block.text! };
+    }
+    return {
+      type: "image_url",
+      image_url: {
+        url: `data:${block.source!.media_type};base64,${block.source!.data}`,
+      },
+    };
+  });
+
+  const res = await fetch(`${base.replace(/\/$/, "")}/v1/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}),
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: maxTokens,
+      messages: [{ role: "user", content: openAIContent }],
+    }),
+  });
+  if (!res.ok) return null;
+  const data = await res.json();
+  return (data.choices?.[0]?.message?.content as string) ?? null;
+}
+
 export async function callLLM(
   prompt: string,
   defaultModel: string,

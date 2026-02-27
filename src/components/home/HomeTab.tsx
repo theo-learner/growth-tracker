@@ -10,7 +10,8 @@ import KDSTChecklist from "./KDSTChecklist";
 import QuickInput from "./QuickInput";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 import { ActivityType, DomainKey } from "@/types";
-import { interpretScore, getOverallSummary } from "@/lib/interpretation";
+import { interpretPercentile, getOverallSummary } from "@/lib/interpretation";
+import { scoreToPercentile } from "@/lib/score-engine";
 
 const DOMAIN_LABELS: Record<DomainKey, string> = {
   verbalComprehension: "언어이해",
@@ -145,7 +146,9 @@ export default function HomeTab() {
               const trend = getDomainTrend(key);
               const prevScore = weeklyReport?.prevScores[key] ?? score;
               const diff = score - prevScore;
-              const interp = interpretScore(score);
+              const age = child?.age ?? 5;
+              const percentile = scoreToPercentile(score, age, key);
+              const interp = interpretPercentile(percentile);
               return (
                 <div key={key} className="flex items-center gap-3 px-4 py-3">
                   <div className={`w-9 h-9 rounded-xl ${interp.bgColor} flex items-center justify-center shrink-0`}>
@@ -158,7 +161,9 @@ export default function HomeTab() {
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-base font-bold text-dark-gray">{score}<span className="text-xs font-normal text-mid-gray">점</span></p>
+                    <p className="text-base font-bold text-dark-gray">
+                      상위 {100 - percentile}<span className="text-xs font-normal text-mid-gray">%</span>
+                    </p>
                     <div className={`text-[10px] font-bold flex items-center justify-end gap-0.5 ${
                       trend === "up" ? "text-primary-600" : trend === "down" ? "text-rose-500" : "text-mid-gray"
                     }`}>

@@ -32,6 +32,7 @@ export default function DailyInsight() {
   const activities = useStore((s) => s.activities);
   const child = useStore((s) => s.child);
   const weeklyReport = useStore((s) => s.weeklyReport);
+  const temperament = useStore((s) => s.temperament);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +56,9 @@ export default function DailyInsight() {
           body: JSON.stringify({
             activities: todayActivities,
             childProfile: child,
+            temperament,
+            weeklyReport,
+            recentActivities: activities.slice(0, 50),
           }),
         });
         setAnalysis(data);
