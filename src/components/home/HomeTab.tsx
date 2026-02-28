@@ -12,6 +12,7 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { ActivityType, DomainKey } from "@/types";
 import { interpretPercentile, getOverallSummary } from "@/lib/interpretation";
 import { scoreToPercentile } from "@/lib/score-engine";
+import { useCountUp } from "@/lib/use-count-up";
 
 const DOMAIN_LABELS: Record<DomainKey, string> = {
   verbalComprehension: "언어이해",
@@ -142,41 +143,17 @@ export default function HomeTab() {
 
           {/* 영역별 리스트 */}
           <div className="bg-white rounded-xl border border-slate-100 shadow-stitch-card divide-y divide-slate-50">
-            {allDomains.map(([key, score]) => {
-              const trend = getDomainTrend(key);
-              const prevScore = weeklyReport?.prevScores[key] ?? score;
-              const diff = score - prevScore;
-              const age = child?.age ?? 5;
-              const percentile = scoreToPercentile(score, age, key);
-              const interp = interpretPercentile(percentile);
-              return (
-                <div key={key} className="flex items-center gap-3 px-4 py-3">
-                  <div className={`w-9 h-9 rounded-xl ${interp.bgColor} flex items-center justify-center shrink-0`}>
-                    <MaterialIcon name={DOMAIN_ICONS[key]} size={18} className={interp.textColor} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-dark-gray">{DOMAIN_LABELS[key]}</p>
-                    <p className={`text-xs font-medium ${interp.textColor}`}>
-                      {interp.emoji} {interp.message}
-                    </p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <p className="text-base font-bold text-dark-gray">
-                      상위 {100 - percentile}<span className="text-xs font-normal text-mid-gray">%</span>
-                    </p>
-                    <div className={`text-[10px] font-bold flex items-center justify-end gap-0.5 ${
-                      trend === "up" ? "text-primary-600" : trend === "down" ? "text-rose-500" : "text-mid-gray"
-                    }`}>
-                      <MaterialIcon
-                        name={trend === "up" ? "trending_up" : trend === "down" ? "trending_down" : "trending_flat"}
-                        size={12}
-                      />
-                      {diff !== 0 ? `${diff > 0 ? "+" : ""}${diff}점` : "유지"}
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {allDomains.map(([key, score], index) => (
+              <DomainRow
+                key={key}
+                domainKey={key}
+                score={score}
+                prevScore={weeklyReport?.prevScores[key] ?? score}
+                trend={getDomainTrend(key)}
+                age={child?.age ?? 5}
+                index={index}
+              />
+            ))}
           </div>
         </div>
       )}
@@ -222,6 +199,53 @@ export default function HomeTab() {
       {activeSheet && (
         <RecordSheet type={activeSheet} onClose={() => setActiveSheet(null)} />
       )}
+    </div>
+  );
+}
+
+// ─── 도메인 행 컴포넌트 (카운트업 훅을 개별 적용) ───────────────────────────
+interface DomainRowProps {
+  domainKey: DomainKey;
+  score: number;
+  prevScore: number;
+  trend: "up" | "stable" | "down";
+  age: number;
+  index: number;
+}
+
+function DomainRow({ domainKey, score, prevScore, trend, age, index }: DomainRowProps) {
+  const percentile = scoreToPercentile(score, age, domainKey);
+  const interp = interpretPercentile(percentile);
+  const diff = score - prevScore;
+
+  // 행마다 80ms 스태거 — 순차 카운트업 효과
+  const animatedTop = useCountUp(100 - percentile, 900, index * 80);
+
+  return (
+    <div className="flex items-center gap-3 px-4 py-3">
+      <div className={`w-9 h-9 rounded-xl ${interp.bgColor} flex items-center justify-center shrink-0`}>
+        <MaterialIcon name={DOMAIN_ICONS[domainKey]} size={18} className={interp.textColor} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-dark-gray">{DOMAIN_LABELS[domainKey]}</p>
+        <p className={`text-xs font-medium ${interp.textColor}`}>
+          {interp.emoji} {interp.message}
+        </p>
+      </div>
+      <div className="text-right shrink-0">
+        <p className="text-base font-bold text-dark-gray tabular-nums">
+          상위 {animatedTop}<span className="text-xs font-normal text-mid-gray">%</span>
+        </p>
+        <div className={`text-[10px] font-bold flex items-center justify-end gap-0.5 ${
+          trend === "up" ? "text-primary-600" : trend === "down" ? "text-rose-500" : "text-mid-gray"
+        }`}>
+          <MaterialIcon
+            name={trend === "up" ? "trending_up" : trend === "down" ? "trending_down" : "trending_flat"}
+            size={12}
+          />
+          {diff !== 0 ? `${diff > 0 ? "+" : ""}${diff}점` : "유지"}
+        </div>
+      </div>
     </div>
   );
 }
