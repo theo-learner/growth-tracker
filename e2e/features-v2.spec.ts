@@ -539,3 +539,202 @@ test.describe("추이 탭 & 설정", () => {
     await page.screenshot({ path: "test-results/v2-35-milestones.png" });
   });
 });
+
+// ─── v3 신규 기능 E2E 테스트 ─────────────────────────────────────────────────
+// 커버 범위:
+//  - 활동 통계 대시보드 (추이 탭 ActivityStatsCard)
+//  - 아이 추가 바텀시트 (AddChildSheet)
+//  - 다자녀 비교 (ReportTab ChildCompareView)
+
+// 활동 통계 섹션(추이 탭 하단)까지 스크롤하고 헤더를 반환하는 헬퍼
+async function scrollToActivityStats(page: Page) {
+  await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
+  await page.waitForTimeout(500);
+  // ActivityStatsCard의 h3가 보일 때까지 추가 대기
+  const h3 = page.locator("h3:has-text('활동 통계')");
+  await h3.waitFor({ state: "attached", timeout: 10000 });
+  await h3.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(300);
+  return h3;
+}
+
+test.describe("v3 기능 — 활동 통계 대시보드 (추이 탭)", () => {
+  test("36 · 추이 탭 — 활동 통계 섹션 헤더 + 주간/월간 토글 표시", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    await goToTab(page, "추이");
+
+    // 추이 탭 하단까지 스크롤하여 ActivityStatsCard 가시화
+    const statsH3 = await scrollToActivityStats(page);
+    await expect(statsH3).toBeVisible({ timeout: 5000 });
+
+    // 기간 토글 (주간/월간) — 항상 표시
+    const weekBtn = page.locator("button:has-text('주간')").first();
+    await weekBtn.scrollIntoViewIfNeeded();
+    await expect(weekBtn).toBeVisible({ timeout: 5000 });
+    await expect(page.locator("button:has-text('월간')").first()).toBeVisible({ timeout: 5000 });
+
+    // 샘플 데이터는 통계에서 제외(isSample 필터링) → 빈 상태 메시지
+    await expect(
+      page.locator("text=최근 7일간 기록된 활동이 없어요.").first()
+    ).toBeVisible({ timeout: 5000 });
+
+    await page.screenshot({ path: "test-results/v3-36-activity-stats.png" });
+  });
+
+  test("37 · 활동 통계 — 주간(기본) → 월간 토글 전환 시 활성 상태 변화", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    await goToTab(page, "추이");
+    await scrollToActivityStats(page);
+
+    const weekBtn = page.locator("button:has-text('주간')").first();
+    const monthBtn = page.locator("button:has-text('월간')").first();
+    await weekBtn.scrollIntoViewIfNeeded();
+
+    // 주간이 기본 활성 (bg-primary 포함)
+    const weekClass = await weekBtn.getAttribute("class");
+    expect(weekClass, "주간이 기본 활성이어야 함").toContain("bg-primary");
+
+    // 월간 클릭
+    await monthBtn.click({ force: true });
+    await page.waitForTimeout(400);
+
+    const monthClass = await monthBtn.getAttribute("class");
+    expect(monthClass, "월간 클릭 후 활성이어야 함").toContain("bg-primary");
+
+    await page.screenshot({ path: "test-results/v3-37-period-toggle.png" });
+  });
+
+  test("38 · 활동 통계 — 주간→월간 전환 시 빈 상태 메시지 변화", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+    await goToTab(page, "추이");
+    await scrollToActivityStats(page);
+
+    const monthBtn = page.locator("button:has-text('월간')").first();
+    await monthBtn.scrollIntoViewIfNeeded();
+
+    // 기본(주간) 상태: "최근 7일간" 메시지
+    await expect(
+      page.locator("text=최근 7일간 기록된 활동이 없어요.").first()
+    ).toBeVisible({ timeout: 5000 });
+
+    // 월간 클릭 → "최근 30일간" 메시지로 변화
+    await monthBtn.click({ force: true });
+    await page.waitForTimeout(400);
+
+    await expect(
+      page.locator("text=최근 30일간 기록된 활동이 없어요.").first()
+    ).toBeVisible({ timeout: 5000 });
+
+    await page.screenshot({ path: "test-results/v3-38-empty-period-change.png" });
+  });
+});
+
+test.describe("v3 기능 — 아이 추가 (AddChildSheet)", () => {
+  test("39 · 설정 모달 — 아이 관리 섹션 + 아이 추가 버튼 표시", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+
+    // 설정 버튼 (헤더 우측)
+    await page.getByRole("button", { name: "설정" }).click({ force: true });
+    await page.waitForTimeout(600);
+
+    // 아이 관리 섹션 표시
+    await expect(page.locator("text=아이 관리")).toBeVisible({ timeout: 5000 });
+
+    // 아이 추가 버튼
+    await expect(
+      page.locator("button:has-text('아이 추가')")
+    ).toBeVisible({ timeout: 5000 });
+
+    // 현재 아이(지우)가 선택된 칩으로 표시
+    await expect(
+      page.locator("button:has-text('지우')").first()
+    ).toBeVisible({ timeout: 5000 });
+
+    await page.screenshot({ path: "test-results/v3-39-settings-child-mgmt.png" });
+  });
+
+  test("40 · 아이 추가 시트 — 닉네임+나이+성별 입력 완료 시 추가하기 버튼 활성화", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+
+    // 설정 → 아이 추가 버튼
+    await page.getByRole("button", { name: "설정" }).click({ force: true });
+    await page.waitForTimeout(400);
+    await page.locator("button:has-text('아이 추가')").click({ force: true });
+    await page.waitForTimeout(400);
+
+    // 아이 추가 시트(z-[60])가 SettingsModal(z-50) 위에 표시됨
+    const nameInput = page.getByPlaceholder("예: 시안");
+    await expect(nameInput).toBeVisible({ timeout: 5000 });
+
+    // 추가하기 버튼 — 초기에는 비활성 (canSave = nickname && age && gender)
+    const addBtn = page.locator("button:has-text('추가하기')");
+    await expect(addBtn).toBeDisabled({ timeout: 3000 });
+
+    // 닉네임 입력
+    await nameInput.fill("시안");
+
+    // 나이 선택 — AddChildSheet는 이제 z-[60]으로 최상위
+    await page.locator("button:has-text('만 6세')").evaluate((el: HTMLElement) => el.click());
+
+    // 성별 선택 (👧 여아)
+    await page.locator("button:has-text('여아')").evaluate((el: HTMLElement) => el.click());
+    await page.waitForTimeout(300);
+
+    // 모두 입력 완료 → 추가하기 활성화
+    await expect(addBtn).toBeEnabled({ timeout: 3000 });
+
+    await page.screenshot({ path: "test-results/v3-40-add-child-form.png" });
+  });
+});
+
+test.describe("v3 기능 — 다자녀 비교 (리포트 탭)", () => {
+  test("41 · 아이 추가 완료 → 리포트 탭 자녀 비교 섹션 표시", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForLoadState("networkidle");
+
+    // 설정 열기
+    await page.getByRole("button", { name: "설정" }).click({ force: true });
+    await page.waitForTimeout(400);
+
+    // 아이 추가 시트 열기 (AddChildSheet: z-[60] > SettingsModal: z-50)
+    await page.locator("button:has-text('아이 추가')").click({ force: true });
+    await page.waitForTimeout(400);
+
+    const nameInput = page.getByPlaceholder("예: 시안");
+    await expect(nameInput).toBeVisible({ timeout: 5000 });
+
+    // 폼 입력 — evaluate()로 React 합성 이벤트 직접 트리거
+    await nameInput.fill("시안");
+    await page.locator("button:has-text('만 4세')").evaluate((el: HTMLElement) => el.click());
+    await page.locator("button:has-text('남아')").evaluate((el: HTMLElement) => el.click());
+    await page.waitForTimeout(200);
+
+    // 추가하기 버튼 활성화 확인 후 클릭
+    const addBtn = page.locator("button:has-text('추가하기')");
+    await expect(addBtn).toBeEnabled({ timeout: 3000 });
+    await addBtn.evaluate((el: HTMLElement) => el.click());
+    await page.waitForTimeout(600);
+
+    // AddChildSheet가 닫힌 후 SettingsModal 닫기
+    // backdrop: fixed inset-0 z-40, 모달 콘텐츠: top-20(80px)부터 → y=40은 backdrop 영역
+    await page.mouse.click(195, 40);
+    await page.waitForTimeout(500);
+
+    // 리포트 탭 이동
+    await goToTab(page, "리포트");
+    await page.waitForTimeout(500);
+
+    // 자녀 비교 섹션 존재 확인 (children.length >= 2)
+    const compareSection = page.locator("h3:has-text('자녀 비교')");
+    await compareSection.waitFor({ state: "attached", timeout: 8000 });
+    await compareSection.scrollIntoViewIfNeeded();
+    await expect(compareSection).toBeVisible({ timeout: 3000 });
+
+    await page.screenshot({ path: "test-results/v3-41-child-compare.png" });
+  });
+});

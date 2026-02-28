@@ -38,11 +38,11 @@ export default function AddChildSheet({ onClose }: AddChildSheetProps) {
   return (
     <>
       <div
-        className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+        className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm"
         onClick={onClose}
       />
       <div
-        className="fixed inset-x-0 bottom-0 z-50 bg-white rounded-t-[24px] overflow-y-auto max-h-[90dvh]"
+        className="fixed inset-x-0 bottom-0 z-[60] bg-white rounded-t-[24px] overflow-y-auto max-h-[90dvh]"
         style={{ boxShadow: "0 -8px 40px rgba(0,0,0,0.12)" }}
       >
         <div className="bottom-sheet-handle" />
