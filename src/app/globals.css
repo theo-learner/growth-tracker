@@ -81,6 +81,16 @@ input, textarea, button, select {
 @layer components {
 
   /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+     점수/숫자 display 폰트 (Montserrat)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+  .font-display-score {
+    font-family: "Montserrat", "Lexend", sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
      카드 시스템 — 따뜻한 그라데이션 + 입체 그림자
      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 

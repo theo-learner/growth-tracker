@@ -31,11 +31,11 @@ const DOMAIN_ICONS: Record<DomainKey, string> = {
 };
 
 const RECORD_BUTTONS: { type: ActivityType; icon: string; label: string; color: string }[] = [
-  { type: "photo",    icon: "photo_camera", label: "사진",   color: "bg-pink-100 text-pink-600" },
-  { type: "activity", icon: "timer",        label: "활동",   color: "bg-blue-100 text-blue-600" },
-  { type: "question", icon: "chat_bubble",  label: "질문",   color: "bg-purple-100 text-purple-600" },
-  { type: "reading",  icon: "menu_book",    label: "독서",   color: "bg-emerald-100 text-emerald-600" },
-  { type: "emotion",  icon: "mood",         label: "감정",   color: "bg-orange-100 text-orange-600" },
+  { type: "photo",    icon: "photo_camera", label: "사진",   color: "bg-domain-processingSpeed-bg text-domain-processingSpeed" },
+  { type: "activity", icon: "timer",        label: "활동",   color: "bg-domain-verbalComprehension-bg text-domain-verbalComprehension" },
+  { type: "question", icon: "chat_bubble",  label: "질문",   color: "bg-domain-visualSpatial-bg text-domain-visualSpatial" },
+  { type: "reading",  icon: "menu_book",    label: "독서",   color: "bg-domain-fluidReasoning-bg text-domain-fluidReasoning" },
+  { type: "emotion",  icon: "mood",         label: "감정",   color: "bg-domain-workingMemory-bg text-domain-workingMemory" },
 ];
 
 /**
@@ -91,7 +91,64 @@ export default function HomeTab() {
   const avatarEmoji = GENDER_AVATAR[child?.gender ?? "unknown"] ?? "🧒";
 
   return (
-    <div className="px-5 pb-4">
+    <div className="relative px-5 pb-4 overflow-hidden">
+      {/* 성장 메타포 SVG — 홈 상단 장식 */}
+      <div
+        className="absolute top-0 left-0 right-0 h-72 pointer-events-none select-none"
+        aria-hidden="true"
+      >
+        <svg
+          viewBox="0 0 430 288"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-full"
+          preserveAspectRatio="xMidYMid slice"
+        >
+          <defs>
+            <linearGradient id="bgFade" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#e8f7fd" stopOpacity="0.6" />
+              <stop offset="100%" stopColor="#f6f7f8" stopOpacity="0" />
+            </linearGradient>
+            <linearGradient id="stemGrad" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stopColor="#4BBFA0" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#2bbdee" stopOpacity="0.35" />
+            </linearGradient>
+          </defs>
+          {/* 배경 wash */}
+          <rect width="430" height="288" fill="url(#bgFade)" />
+          {/* 좌상단 원형 버블 */}
+          <circle cx="48" cy="56" r="72" fill="#2bbdee" fillOpacity="0.06" />
+          {/* 우상단 원형 버블 */}
+          <circle cx="392" cy="72" r="56" fill="#4BBFA0" fillOpacity="0.07" />
+          {/* 작은 보조 버블 */}
+          <circle cx="340" cy="24" r="22" fill="#9B72CF" fillOpacity="0.05" />
+          {/* 줄기 — 아래에서 위로 자라는 성장 곡선 */}
+          <path
+            d="M 215 282 C 215 248, 206 220, 212 188 C 218 156, 228 132, 218 96"
+            stroke="url(#stemGrad)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+          />
+          {/* 왼쪽 잎 */}
+          <path
+            d="M 213 196 C 184 180, 168 152, 186 130 C 196 162, 208 182, 213 196 Z"
+            fill="#4BBFA0"
+            fillOpacity="0.18"
+          />
+          {/* 오른쪽 잎 */}
+          <path
+            d="M 216 158 C 246 142, 264 116, 250 94 C 238 122, 224 144, 216 158 Z"
+            fill="#2bbdee"
+            fillOpacity="0.18"
+          />
+          {/* 꽃봉오리 도트 */}
+          <circle cx="218" cy="93" r="5.5" fill="#2bbdee" fillOpacity="0.32" />
+          <circle cx="228" cy="84" r="3.5" fill="#4BBFA0" fillOpacity="0.28" />
+          <circle cx="210" cy="80" r="2.5" fill="#9B72CF" fillOpacity="0.22" />
+        </svg>
+      </div>
+
       {/* 아이 프로필 영역 */}
       <div className="flex flex-col items-center py-8">
         <div className="relative">
@@ -233,8 +290,10 @@ function DomainRow({ domainKey, score, prevScore, trend, age, index }: DomainRow
         </p>
       </div>
       <div className="text-right shrink-0">
-        <p className="text-base font-bold text-dark-gray tabular-nums">
-          상위 {animatedTop}<span className="text-xs font-normal text-mid-gray">%</span>
+        <p className="text-sm text-dark-gray">
+          상위{" "}
+          <span className="font-display-score text-lg leading-none">{animatedTop}</span>
+          <span className="text-xs font-normal text-mid-gray">%</span>
         </p>
         <div className={`text-[10px] font-bold flex items-center justify-end gap-0.5 ${
           trend === "up" ? "text-primary-600" : trend === "down" ? "text-rose-500" : "text-mid-gray"

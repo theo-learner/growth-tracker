@@ -60,8 +60,13 @@ export default function MainApp() {
         </div>
       </header>
 
-      {/* 메인 콘텐츠 영역 */}
-      <main className="flex-1 overflow-y-auto pb-24">
+      {/* 메인 콘텐츠 영역 — 탭별 배경 무드 */}
+      <main className={`flex-1 overflow-y-auto pb-24 transition-[background] duration-500 ${
+        activeTab === "home"      ? "bg-home-bg"      :
+        activeTab === "report"    ? "bg-report-bg"    :
+        activeTab === "recommend" ? "bg-recommend-bg" :
+                                    "bg-monthly-bg"
+      }`}>
         {activeTab === "home"      && <HomeTab />}
         {activeTab === "report"    && <ReportTab />}
         {activeTab === "recommend" && <RecommendTab />}

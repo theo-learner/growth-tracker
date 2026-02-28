@@ -131,6 +131,7 @@ const config: Config = {
           "sans-serif",
         ],
         lexend: ["Lexend", "Pretendard Variable", "sans-serif"],
+        montserrat: ["Montserrat", "Lexend", "sans-serif"],
       },
 
       borderRadius: {
@@ -283,6 +284,11 @@ const config: Config = {
         // Stitch primary 그라데이션
         "primary-gradient": "linear-gradient(135deg, #2bbdee 0%, #0b96c9 100%)",
         "primary-soft-gradient": "linear-gradient(135deg, #e0f4fe 0%, #f0faff 100%)",
+        // 탭별 배경 무드
+        "home-bg":      "linear-gradient(180deg, #e8f7fd 0%, #f6f7f8 28%)",
+        "report-bg":    "linear-gradient(180deg, #eff3ff 0%, #f6f7f8 28%)",
+        "recommend-bg": "linear-gradient(180deg, #edfaf5 0%, #f6f7f8 28%)",
+        "monthly-bg":   "linear-gradient(180deg, #f3f0ff 0%, #f6f7f8 28%)",
       },
       backgroundSize: {
         "shimmer": "200% 100%",
