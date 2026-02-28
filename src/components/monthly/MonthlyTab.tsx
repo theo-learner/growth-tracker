@@ -6,6 +6,7 @@ import { DomainKey, DOMAIN_LABELS } from "@/types";
 import MaterialIcon from "@/components/ui/MaterialIcon";
 
 const TrendChart = lazy(() => import("./TrendChart"));
+import ActivityStatsCard from "./ActivityStatsCard";
 
 const ALL_DOMAINS: DomainKey[] = [
   "verbalComprehension", "visualSpatial", "fluidReasoning",
@@ -150,6 +151,9 @@ export default function MonthlyTab() {
             ))}
           </div>
         </section>
+
+        {/* 활동 통계 대시보드 */}
+        <ActivityStatsCard />
 
         {/* 마일스톤 — check_circle + 달성일 */}
         {milestones.length > 0 && (

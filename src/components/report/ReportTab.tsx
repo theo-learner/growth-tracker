@@ -7,12 +7,13 @@ import MaterialIcon from "@/components/ui/MaterialIcon";
 import { scoreToPercentile, percentileToBand } from "@/lib/score-engine";
 
 const RadarChart = lazy(() => import("./RadarChart"));
+const ChildCompareView = lazy(() => import("./ChildCompareView"));
 
 /**
  * 주간 리포트 탭 — Stitch 디자인 (상세 성장 리포트 화면)
  */
 export default function ReportTab() {
-  const { child, weeklyReport, activities } = useStore();
+  const { child, weeklyReport, activities, children, allChildData } = useStore();
   const childAge = child?.age ?? 5;
   const childName = child?.nickname || "아이";
 
@@ -195,6 +196,25 @@ export default function ReportTab() {
             </p>
           </div>
         </div>
+
+        {/* 다자녀 비교 — 2명 이상일 때만 표시 */}
+        {children.length >= 2 && (
+          <section>
+            <h3 className="text-base font-bold text-dark-gray mb-4 flex items-center gap-2">
+              <MaterialIcon name="family_restroom" size={20} className="text-primary" />
+              자녀 비교
+            </h3>
+            <div className="bg-white rounded-xl border border-surface-300/60 shadow-stitch-card p-4">
+              <Suspense fallback={
+                <div className="h-40 flex items-center justify-center text-sm text-mid-gray">
+                  차트 로딩 중...
+                </div>
+              }>
+                <ChildCompareView childList={children} allChildData={allChildData} />
+              </Suspense>
+            </div>
+          </section>
+        )}
       </div>
     </div>
   );

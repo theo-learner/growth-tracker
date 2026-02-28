@@ -108,6 +108,8 @@ test.describe("이번 주 발달 상태 — 해석 레이어", () => {
   });
 
   test("03 · AI Daily Note — 이번 주 종합 상태 한줄 표시", async ({ page }) => {
+    // app-state.json 샘플 데이터가 2026-02-27 기준이므로 날짜 고정
+    await page.clock.setFixedTime(new Date("2026-02-27T12:00:00Z"));
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await goToTab(page, "홈");

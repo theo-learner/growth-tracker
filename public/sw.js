@@ -1,5 +1,5 @@
 // Service Worker for Growth Tracker PWA
-const CACHE_NAME = 'growth-tracker-v2';
+const CACHE_NAME = 'growth-tracker-v3';
 const urlsToCache = [
   '/',
   '/manifest.json',
@@ -72,3 +72,31 @@ async function fetchAndCache(request) {
   }
   return response;
 }
+
+// 푸시 알림 수신
+self.addEventListener('push', (event) => {
+  const data = event.data?.json() ?? {};
+  const title = data.title || '🌱 성장 트래커';
+  const options = {
+    body: data.body || '아이의 기록을 남겨보세요!',
+    icon: '/icons/icon-192.svg',
+    badge: '/icons/icon-192.svg',
+    tag: 'growth-tracker-reminder',
+    renotify: true,
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// 알림 클릭 시 앱 포커스 또는 열기
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((windowClients) => {
+        const existing = windowClients.find((c) => c.url.includes('/'));
+        if (existing) return existing.focus();
+        return clients.openWindow('/');
+      })
+  );
+});

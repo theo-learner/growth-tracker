@@ -72,11 +72,29 @@ export function getNotificationPermission(): NotificationPermission | "unsupport
   return Notification.permission;
 }
 
-// 알림 표시
-export function showNotification(title: string, body: string): void {
+// 알림 표시 (Service Worker 기반 — 백그라운드 지원)
+export async function showNotification(title: string, body: string): Promise<void> {
   if (typeof window === "undefined" || !("Notification" in window)) return;
   if (Notification.permission !== "granted") return;
 
+  // SW 등록이 있으면 SW를 통해 알림 (백그라운드/포그라운드 모두 동작)
+  if ("serviceWorker" in navigator) {
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.showNotification(title, {
+        body,
+        icon: "/icons/icon-192.svg",
+        badge: "/icons/icon-192.svg",
+        tag: "growth-tracker-reminder",
+        renotify: true,
+      } as NotificationOptions);
+      return;
+    } catch {
+      // SW 알림 실패 시 fallback
+    }
+  }
+
+  // Fallback: 직접 Notification API (포그라운드 전용)
   new Notification(title, {
     body,
     icon: "/icons/icon-192.svg",
@@ -95,11 +113,11 @@ export function startReminderScheduler(): void {
   const checkReminders = () => {
     const now = new Date();
     const currentTime = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    
+
     const reminders = getReminders();
     reminders.forEach((reminder) => {
       if (reminder.enabled && reminder.time === currentTime) {
-        showNotification("🌱 성장 트래커", reminder.message);
+        void showNotification("🌱 성장 트래커", reminder.message);
       }
     });
   };

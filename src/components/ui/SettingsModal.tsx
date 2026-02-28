@@ -7,10 +7,12 @@ import {
   updateReminder,
   requestNotificationPermission,
   getNotificationPermission,
+  startReminderScheduler,
   type Reminder,
 } from "@/lib/notifications";
 import { exportActivitiesCSV, exportAllDataJSON } from "@/lib/export";
 import MaterialIcon from "@/components/ui/MaterialIcon";
+import AddChildSheet from "@/components/ui/AddChildSheet";
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -23,6 +25,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
   const { child, children, activeChildId, activities, switchChild, resetAll } = useStore();
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [notifPermission, setNotifPermission] = useState<string>("default");
+  const [showAddChild, setShowAddChild] = useState(false);
 
   useEffect(() => {
     setReminders(getReminders());
@@ -47,6 +50,7 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
     }
     const updated = updateReminder(id, { enabled });
     setReminders(updated);
+    if (enabled) startReminderScheduler();
   };
 
   const handleTimeChange = (id: string, time: string) => {
@@ -56,6 +60,9 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
 
   return (
     <>
+      {showAddChild && (
+        <AddChildSheet onClose={() => setShowAddChild(false)} />
+      )}
       <div className="bottom-sheet-backdrop" onClick={onClose} />
       <div className="fixed inset-x-0 bottom-0 top-20 left-1/2 -translate-x-1/2 w-full max-w-[430px] bg-white rounded-t-[24px] z-50 animate-slideUp overflow-y-auto"
            style={{ boxShadow: "0 -8px 40px rgba(0,0,0,0.08), 0 -2px 12px rgba(0,0,0,0.04)" }}>
@@ -75,30 +82,39 @@ export default function SettingsModal({ onClose }: SettingsModalProps) {
             </button>
           </div>
 
-          {/* 아이 선택 (다자녀 지원) */}
-          {children.length > 1 && (
-            <div className="bg-surface rounded-xl p-4 mb-4">
-              <h4 className="text-sm font-semibold mb-3 flex items-center gap-1.5">
+          {/* 아이 선택 + 추가 (다자녀 지원) */}
+          <div className="bg-surface rounded-xl p-4 mb-4">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="text-sm font-semibold flex items-center gap-1.5">
                 <MaterialIcon name="family_restroom" size={16} className="text-primary" />
-                아이 선택
+                아이 관리
               </h4>
-              <div className="flex flex-wrap gap-2">
-                {children.map((c) => (
-                  <button
-                    key={c.id}
-                    onClick={() => switchChild(c.id)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all
-                      ${activeChildId === c.id
-                        ? "bg-primary text-white shadow-stitch-btn"
-                        : "bg-white border border-slate-200 hover:border-primary/40"
-                      }`}
-                  >
-                    {c.nickname}
-                  </button>
-                ))}
-              </div>
+              <button
+                onClick={() => setShowAddChild(true)}
+                className="flex items-center gap-1 text-xs font-medium text-primary
+                           px-2.5 py-1 rounded-full border border-primary/30
+                           hover:bg-primary/5 transition-colors"
+              >
+                <MaterialIcon name="add" size={14} />
+                아이 추가
+              </button>
             </div>
-          )}
+            <div className="flex flex-wrap gap-2">
+              {children.map((c) => (
+                <button
+                  key={c.id}
+                  onClick={() => switchChild(c.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all
+                    ${activeChildId === c.id
+                      ? "bg-primary text-white shadow-stitch-btn"
+                      : "bg-white border border-slate-200 hover:border-primary/40"
+                    }`}
+                >
+                  {c.nickname}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* 아이 정보 */}
           <div className="bg-surface rounded-xl p-4 mb-4">

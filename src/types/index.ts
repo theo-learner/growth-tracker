@@ -126,3 +126,12 @@ export interface Milestone {
   icon: string;
   achievedDate: string;
 }
+
+// 자녀별 리포트·추천 데이터 묶음
+export interface PerChildData {
+  weeklyReport: WeeklyReport | null;
+  monthlyData: MonthlyDataPoint[];
+  recommendations: RecommendedActivity[];
+  products: RecommendedProduct[];
+  milestones: Milestone[];
+}
