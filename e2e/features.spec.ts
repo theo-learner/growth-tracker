@@ -460,23 +460,18 @@ test.describe("추천 탭 — 집중 영역 & 비용 없는 놀이", () => {
 });
 
 test.describe("UI/UX — 디자인 시스템 일관성", () => {
-  test("15 · 하단 내비게이션 fixed CSS 속성 확인", async ({ page }) => {
+  test("15 · 하단 내비게이션 — nav 요소 존재 + 탭 버튼 4개 확인", async ({ page }) => {
     await page.goto("/");
     await page.waitForLoadState("networkidle");
     await goToTab(page, "홈");
 
-    // 하단 nav 바의 position: fixed CSS 확인 (MainApp: <nav className="fixed bottom-0 ...">)
-    const navPosition = await page.evaluate(() => {
-      const nav = document.querySelector("nav");
-      if (!nav) return null;
-      return window.getComputedStyle(nav).position;
-    });
+    // nav 요소가 존재하고 탭 버튼 4개가 있어야 함
+    const nav = page.locator("nav");
+    await expect(nav).toBeVisible({ timeout: 3000 });
 
-    // fixed (탭 바가 화면 하단에 고정되어야 함)
-    expect(
-      ["sticky", "fixed"].includes(navPosition ?? ""),
-      `하단 nav position이 fixed여야 함 (실제: ${navPosition})`
-    ).toBe(true);
+    for (const label of ["홈", "리포트", "놀이", "추이"]) {
+      await expect(nav.locator(`button:has-text('${label}')`)).toBeVisible({ timeout: 3000 });
+    }
 
     await page.screenshot({ path: "test-results/feat-15-sticky-header.png" });
   });

@@ -61,7 +61,7 @@ export default function MainApp() {
       </header>
 
       {/* 메인 콘텐츠 영역 — 탭별 배경 무드 */}
-      <main className={`flex-1 overflow-y-auto pb-24 transition-[background] duration-500 ${
+      <main className={`flex-1 overflow-y-auto transition-[background] duration-500 ${
         activeTab === "home"      ? "bg-home-bg"      :
         activeTab === "report"    ? "bg-report-bg"    :
         activeTab === "recommend" ? "bg-recommend-bg" :
@@ -74,7 +74,7 @@ export default function MainApp() {
       </main>
 
       {/* 하단 탭 바 */}
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50">
+      <nav className="shrink-0 w-full">
         <div className="bg-white/90 backdrop-blur-xl border-t border-slate-100
                         shadow-tab-bar safe-bottom">
           <div className="flex justify-around px-2 pt-2 pb-3">
