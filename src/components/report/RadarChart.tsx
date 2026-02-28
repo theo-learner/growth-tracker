@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import {
   Radar,
   RadarChart as RechartsRadarChart,
@@ -14,11 +15,65 @@ interface RadarChartProps {
   prevScores: Record<DomainKey, number>;
 }
 
+const domains: DomainKey[] = [
+  "verbalComprehension", "visualSpatial", "fluidReasoning",
+  "workingMemory", "processingSpeed",
+];
+
+const ZERO = Object.fromEntries(domains.map((k) => [k, 0])) as Record<DomainKey, number>;
+
+function easeOutQuart(t: number): number {
+  return 1 - Math.pow(1 - t, 4);
+}
+
+/** 0에서 targets 값까지 duration ms 동안 보간 후 onUpdate 호출 */
+function animateTo(
+  targets: Record<DomainKey, number>,
+  duration: number,
+  delay: number,
+  onUpdate: (v: Record<DomainKey, number>) => void,
+): () => void {
+  let frameId: number;
+  const timerId = setTimeout(() => {
+    const t0 = performance.now();
+    const tick = (now: number) => {
+      const t = Math.min((now - t0) / duration, 1);
+      const eased = easeOutQuart(t);
+      onUpdate(
+        Object.fromEntries(domains.map((k) => [k, targets[k] * eased])) as Record<DomainKey, number>,
+      );
+      if (t < 1) frameId = requestAnimationFrame(tick);
+    };
+    frameId = requestAnimationFrame(tick);
+  }, delay);
+
+  return () => {
+    clearTimeout(timerId);
+    cancelAnimationFrame(frameId);
+  };
+}
+
 /**
- * 6영역 레이더 차트 v2 — 통일된 컬러 팔레트 + 부드러운 그라데이션
+ * 6영역 레이더 차트 — 드로 애니메이션
+ * 지난 주(점선) → 0→값 800ms, 이번 주(실선) → 300ms 딜레이 후 1200ms
  */
 export default function RadarChart({ scores, prevScores }: RadarChartProps) {
-  // 데이터 유효성 검증
+  const [displayPrev, setDisplayPrev] = useState<Record<DomainKey, number>>(ZERO);
+  const [displayCurr, setDisplayCurr] = useState<Record<DomainKey, number>>(ZERO);
+
+  useEffect(() => {
+    setDisplayPrev(ZERO);
+    setDisplayCurr(ZERO);
+
+    const cancelPrev = animateTo(prevScores, 800, 0, setDisplayPrev);
+    const cancelCurr = animateTo(scores, 1200, 300, setDisplayCurr);
+
+    return () => {
+      cancelPrev();
+      cancelCurr();
+    };
+  }, [scores, prevScores]);
+
   if (!scores || !prevScores) {
     return (
       <div className="flex items-center justify-center h-[280px]">
@@ -27,21 +82,16 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
     );
   }
 
-  const domains: DomainKey[] = [
-    "verbalComprehension", "visualSpatial", "fluidReasoning",
-    "workingMemory", "processingSpeed",
-  ];
-
   const data = domains.map((key) => ({
     domain: DOMAIN_LABELS[key],
-    current: scores[key] || 0,
-    previous: prevScores[key] || 0,
+    current: displayCurr[key],
+    previous: displayPrev[key],
     fullMark: 100,
   }));
 
   return (
     <div className="relative">
-      {/* 차트 배경 — sky blue 글로우 */}
+      {/* 배경 글로우 */}
       <div
         className="absolute inset-0 flex items-center justify-center pointer-events-none"
         aria-hidden
@@ -54,22 +104,13 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
 
       <ResponsiveContainer width="100%" height={280}>
         <RechartsRadarChart data={data} cx="50%" cy="50%" outerRadius="72%">
-          {/* 그리드 — 부드러운 회색 (브랜드 통일) */}
-          <PolarGrid
-            stroke="#E8E8E8"
-            strokeWidth={0.8}
-            strokeDasharray="3 3"
-          />
-          {/* 축 라벨 — 읽기 쉬운 크기, 브랜드 색상 */}
+          <PolarGrid stroke="#E8E8E8" strokeWidth={0.8} strokeDasharray="3 3" />
           <PolarAngleAxis
             dataKey="domain"
-            tick={{
-              fontSize: 11,
-              fill: "#555555",
-              fontWeight: 500,
-            }}
+            tick={{ fontSize: 11, fill: "#555555", fontWeight: 500 }}
           />
-          {/* 지난 주 (점선 — 따뜻한 베이지 톤) */}
+
+          {/* 지난 주 */}
           <Radar
             name="지난 주"
             dataKey="previous"
@@ -78,8 +119,10 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
             fillOpacity={0.1}
             strokeWidth={1.5}
             strokeDasharray="5 4"
+            isAnimationActive={false}
           />
-          {/* 이번 주 (실선 — Sky Blue + 그라데이션 필) */}
+
+          {/* 이번 주 */}
           <Radar
             name="이번 주"
             dataKey="current"
@@ -87,14 +130,10 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
             fill="url(#radarBlueGradient)"
             fillOpacity={0.28}
             strokeWidth={2.5}
-            dot={{
-              r: 3.5,
-              fill: "#2bbdee",
-              stroke: "#FFFFFF",
-              strokeWidth: 2,
-            }}
+            dot={{ r: 3.5, fill: "#2bbdee", stroke: "#FFFFFF", strokeWidth: 2 }}
+            isAnimationActive={false}
           />
-          {/* 그라데이션 정의 — Sky Blue */}
+
           <defs>
             <radialGradient id="radarBlueGradient" cx="50%" cy="50%" r="50%">
               <stop offset="0%" stopColor="#e0f4fe" stopOpacity={0.7} />
@@ -105,7 +144,7 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
         </RechartsRadarChart>
       </ResponsiveContainer>
 
-      {/* 범례 — 하단 (세련된 디자인) */}
+      {/* 범례 */}
       <div className="flex items-center justify-center gap-6 mt-2 text-xs text-slate-500">
         <span className="flex items-center gap-2">
           <span className="w-5 h-[3px] rounded-full bg-primary inline-block" />
@@ -115,7 +154,8 @@ export default function RadarChart({ scores, prevScores }: RadarChartProps) {
           <span
             className="w-5 h-[2px] inline-block rounded-full"
             style={{
-              backgroundImage: "repeating-linear-gradient(90deg, #D4C8B0 0, #D4C8B0 3px, transparent 3px, transparent 6px)",
+              backgroundImage:
+                "repeating-linear-gradient(90deg, #D4C8B0 0, #D4C8B0 3px, transparent 3px, transparent 6px)",
             }}
           />
           <span className="font-medium">지난 주</span>
