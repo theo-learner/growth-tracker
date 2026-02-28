@@ -98,7 +98,7 @@ export default function HomeTab() {
         aria-hidden="true"
       >
         <svg
-          viewBox="0 0 430 288"
+          viewBox="0 0 390 288"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           className="w-full h-full"
@@ -106,46 +106,53 @@ export default function HomeTab() {
         >
           <defs>
             <linearGradient id="bgFade" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#e8f7fd" stopOpacity="0.6" />
+              <stop offset="0%" stopColor="#e8f7fd" stopOpacity="0.7" />
               <stop offset="100%" stopColor="#f6f7f8" stopOpacity="0" />
             </linearGradient>
-            <linearGradient id="stemGrad" x1="0" y1="1" x2="0" y2="0">
-              <stop offset="0%" stopColor="#4BBFA0" stopOpacity="0.2" />
-              <stop offset="100%" stopColor="#2bbdee" stopOpacity="0.35" />
+            <linearGradient id="leftStem" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stopColor="#4BBFA0" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#2bbdee" stopOpacity="0.5" />
             </linearGradient>
           </defs>
           {/* 배경 wash */}
-          <rect width="430" height="288" fill="url(#bgFade)" />
-          {/* 좌상단 원형 버블 */}
-          <circle cx="48" cy="56" r="72" fill="#2bbdee" fillOpacity="0.06" />
-          {/* 우상단 원형 버블 */}
-          <circle cx="392" cy="72" r="56" fill="#4BBFA0" fillOpacity="0.07" />
-          {/* 작은 보조 버블 */}
-          <circle cx="340" cy="24" r="22" fill="#9B72CF" fillOpacity="0.05" />
-          {/* 줄기 — 아래에서 위로 자라는 성장 곡선 */}
+          <rect width="390" height="288" fill="url(#bgFade)" />
+
+          {/* 좌측 성장 줄기 — 가장자리에서 올라오는 새싹 */}
           <path
-            d="M 215 282 C 215 248, 206 220, 212 188 C 218 156, 228 132, 218 96"
-            stroke="url(#stemGrad)"
-            strokeWidth="2"
+            d="M 38 288 C 38 250, 32 220, 36 185 C 40 150, 48 125, 42 88"
+            stroke="url(#leftStem)"
+            strokeWidth="2.5"
             strokeLinecap="round"
             fill="none"
           />
-          {/* 왼쪽 잎 */}
+          {/* 좌측 왼쪽 잎 */}
           <path
-            d="M 213 196 C 184 180, 168 152, 186 130 C 196 162, 208 182, 213 196 Z"
+            d="M 37 192 C 10 175, -2 145, 14 122 C 22 152, 32 175, 37 192 Z"
             fill="#4BBFA0"
-            fillOpacity="0.18"
+            fillOpacity="0.35"
           />
-          {/* 오른쪽 잎 */}
+          {/* 좌측 오른쪽 잎 */}
           <path
-            d="M 216 158 C 246 142, 264 116, 250 94 C 238 122, 224 144, 216 158 Z"
+            d="M 40 155 C 68 138, 82 112, 68 90 C 57 116, 46 138, 40 155 Z"
             fill="#2bbdee"
-            fillOpacity="0.18"
+            fillOpacity="0.32"
           />
-          {/* 꽃봉오리 도트 */}
-          <circle cx="218" cy="93" r="5.5" fill="#2bbdee" fillOpacity="0.32" />
-          <circle cx="228" cy="84" r="3.5" fill="#4BBFA0" fillOpacity="0.28" />
-          <circle cx="210" cy="80" r="2.5" fill="#9B72CF" fillOpacity="0.22" />
+          {/* 좌측 꽃봉오리 */}
+          <circle cx="42" cy="86" r="6" fill="#2bbdee" fillOpacity="0.45" />
+          <circle cx="52" cy="76" r="4" fill="#4BBFA0" fillOpacity="0.38" />
+          <circle cx="34" cy="72" r="3" fill="#9B72CF" fillOpacity="0.30" />
+
+          {/* 우상단 장식 버블 군 */}
+          <circle cx="368" cy="40" r="48" fill="#4BBFA0" fillOpacity="0.08" />
+          <circle cx="355" cy="18" r="22" fill="#2bbdee" fillOpacity="0.10" />
+          <circle cx="380" cy="68" r="14" fill="#9B72CF" fillOpacity="0.08" />
+          {/* 우측 점 도트 */}
+          <circle cx="345" cy="52" r="4" fill="#2bbdee" fillOpacity="0.25" />
+          <circle cx="362" cy="85" r="3" fill="#4BBFA0" fillOpacity="0.22" />
+          <circle cx="378" cy="32" r="2.5" fill="#9B72CF" fillOpacity="0.20" />
+
+          {/* 좌상단 버블 */}
+          <circle cx="18" cy="28" r="36" fill="#2bbdee" fillOpacity="0.07" />
         </svg>
       </div>
 
