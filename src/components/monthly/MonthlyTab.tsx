@@ -38,11 +38,14 @@ export default function MonthlyTab() {
 
   const displayDomains = selectedDomain === "all" ? ALL_DOMAINS : [selectedDomain];
 
-  // 최근 2개월 점수 변화
+  // 주간 점수 변화 (weeklyReport.prevScores 기준)
+  // monthlyData 기반은 현재 달 기록 없을 때 음수가 나오는 문제 있음
   const getDelta = (domain: DomainKey): number | null => {
-    const actual = monthlyData.filter((d) => !d.predicted);
-    if (actual.length < 2) return null;
-    return actual[actual.length - 1].scores[domain] - actual[actual.length - 2].scores[domain];
+    if (!weeklyReport?.prevScores) return null;
+    const curr = weeklyReport.scores[domain];
+    const prev = weeklyReport.prevScores[domain];
+    if (curr === undefined || prev === undefined) return null;
+    return curr - prev;
   };
 
   return (

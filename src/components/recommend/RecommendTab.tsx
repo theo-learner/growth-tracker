@@ -268,7 +268,7 @@ function ActivityCard({ rec, onStart }: ActivityCardProps) {
         ) : (
           <div className={`w-full h-full bg-gradient-to-r ${bannerGradient}
                            flex items-center justify-center`}>
-            <span className="text-5xl opacity-50">{rec.icon}</span>
+            <span className="text-5xl opacity-80">{rec.icon}</span>
           </div>
         )}
       </div>
